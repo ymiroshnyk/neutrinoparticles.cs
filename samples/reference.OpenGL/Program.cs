@@ -11,7 +11,8 @@ namespace OpenGLTutorial6
 		private static int width = 1280, height = 720;
 		private static System.Diagnostics.Stopwatch watch;
 		private static NeutrinoGl.Context context_;
-		private static NeutrinoGl.Renderer renderer_;
+		private static NeutrinoGl.EffectModel effectModel_;
+		private static NeutrinoGl.Effect effect_;
 		private static float time_;
 		private static float displace = 200.0f;
 
@@ -30,8 +31,8 @@ namespace OpenGLTutorial6
 
 			time_ = 0;
 			context_ = new NeutrinoGl.Context("..\\..\\effects\\textures\\");
-			renderer_ = new NeutrinoGl.Renderer(context_, new Neutrino.Effect_A_lot_of_particles(), 
-				Neutrino.NMath.vec3_(displace, 0, 0));
+			effectModel_ = new NeutrinoGl.EffectModel(context_, new Neutrino.Effect_A_lot_of_particles());
+			effect_ = new NeutrinoGl.Effect(effectModel_, Neutrino.NMath.vec3_(displace, 0, 0));
 
 			// load a crate texture
 			watch = System.Diagnostics.Stopwatch.StartNew();
@@ -41,7 +42,8 @@ namespace OpenGLTutorial6
 
 		private static void OnClose()
 		{
-			renderer_.shutdown();
+			effect_.shutdown();
+			effectModel_.shutdown();
 			context_.shutdown();
 		}
 
@@ -62,7 +64,7 @@ namespace OpenGLTutorial6
 			Matrix4 modelMatrix = modelTranslationMatrix * modelRotationMatrix;
 
 			time_ += deltaTime;
-			renderer_.update(deltaTime, Neutrino.NMath.vec3_(modelMatrix[3].x, modelMatrix[3].y, modelMatrix[3].z));
+			effect_.update(deltaTime, Neutrino.NMath.vec3_(modelMatrix[3].x, modelMatrix[3].y, modelMatrix[3].z));
 			
 			// set up the OpenGL viewport and clear both the color and depth bits
 			Gl.Viewport(0, 0, width, height);
@@ -73,7 +75,7 @@ namespace OpenGLTutorial6
 			Matrix4 projMatrix = Matrix4.CreatePerspectiveFieldOfView(60F * (float)Math.PI / 180F, (float)width / height, 1F, 10000F); //.CreateOrthographic(width, height, 1F, 10000F);
 			Matrix4 viewMatrix = Matrix4.LookAt(new Vector3(0, 0, 1000), Vector3.Zero, Vector3.Up);
 			
-			renderer_.render(ref projMatrix, ref viewMatrix, ref modelMatrix);
+			effect_.render(ref projMatrix, ref viewMatrix, ref modelMatrix);
 			
 			Glut.glutSwapBuffers();
 		}

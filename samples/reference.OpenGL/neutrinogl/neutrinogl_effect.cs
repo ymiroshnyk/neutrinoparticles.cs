@@ -4,49 +4,36 @@ using System.Runtime.InteropServices;
 
 namespace NeutrinoGl
 {
-	public class Renderer
+	public class Effect
 	{
-		NeutrinoGl.Context context_;
-		RenderBuffer renderBuffer_;
-		Neutrino.System system_;
+		EffectModel model_;
+		RenderBuffers renderBuffer_;
 		Neutrino.NMath.vec3 position_;
+		Neutrino.System neutrinoEffect_;
 
-		Texture[] textures_;
-
-		public Renderer(NeutrinoGl.Context context, Neutrino.System.Impl systemImpl, Neutrino.NMath.vec3 position)
+		public Effect(EffectModel model, Neutrino.NMath.vec3 position)
 		{
-			context_ = context;
+			model_ = model;
 
-			renderBuffer_ = new RenderBuffer();
+			renderBuffer_ = new RenderBuffers();
+			neutrinoEffect_ = new Neutrino.System(model_.systemImpl(), renderBuffer_, position_);
 			Neutrino.NMath.copyv3(out position_, position);
-
-			system_ = new Neutrino.System(systemImpl, renderBuffer_, position_);
-
-			uint numTextures = (uint)systemImpl.textures().Length;
-			textures_ = new Texture[numTextures];
-			for (uint texIndex = 0; texIndex < numTextures; ++texIndex)
-			{
-				textures_[texIndex] = new Texture(context_.texturesBasePath() + systemImpl.textures()[texIndex]);
-			}
 		}
 
 		public void shutdown()
 		{
 			renderBuffer_.shutdown();
-
-			foreach (Texture texture in textures_)
-				texture.Dispose();
 		}
 
 		public void update(float dt, Neutrino.NMath.vec3 position)
 		{
 			Neutrino.NMath.copyv3(out position_, position);
-			system_.update(dt, position_);
+			neutrinoEffect_.update(dt, position_);
 		}
 
 		public void render(ref Matrix4 projMatrix, ref Matrix4 viewMatrix, ref Matrix4 modelMatrix)
 		{
-			NeutrinoGl.Materials materials = context_.materials();
+			Materials materials = model_.context().materials();
 
 			materials.setup(ref projMatrix, ref viewMatrix, ref modelMatrix);
 
@@ -64,7 +51,7 @@ namespace NeutrinoGl
 				Neutrino.NMath.vec3_(modelMatrix[2].x, modelMatrix[2].y, modelMatrix[2].z));
 				
 
-			system_.updateRenderBuffer(
+			neutrinoEffect_.updateRenderBuffer(
 				Neutrino.NMath.vec3_(cx[0], cx[1], cx[2]),
 				Neutrino.NMath.vec3_(cy[0], cy[1], cy[2]),
 				Neutrino.NMath.vec3_(cz[0], cz[1], cz[2]),
@@ -93,13 +80,13 @@ namespace NeutrinoGl
 			for (uint callIndex = 0; callIndex < renderBuffer_.numRenderCalls(); ++callIndex)
 			{
 				Neutrino.RenderCall rc = renderBuffer_.renderCalls()[callIndex];
-				Neutrino.RenderStyle style = system_.impl().renderStyles()[rc.renderStyleIndex_];
+				Neutrino.RenderStyle style = neutrinoEffect_.impl().renderStyles()[rc.renderStyleIndex_];
 
 				uint texIndex = style.textureIndex_[0];
-				Gl.BindTexture(textures_[texIndex]);
+				Gl.BindTexture(model_.textures()[texIndex]);
 
 				uint materialIndex = style.material_;
-				Neutrino.RenderMaterial material = system_.impl().materials()[materialIndex];
+				Neutrino.RenderMaterial material = neutrinoEffect_.impl().materials()[materialIndex];
 
 				switch (material)
 				{

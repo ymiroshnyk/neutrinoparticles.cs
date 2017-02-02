@@ -4,7 +4,7 @@ using OpenGL;
 
 namespace NeutrinoGl
 {
-	public class RenderBuffer : Neutrino.RenderBuffer
+	public class RenderBuffers : Neutrino.RenderBuffer
 	{
 		class TexChannel
 		{
@@ -29,7 +29,7 @@ namespace NeutrinoGl
 		Neutrino.RenderCall[] renderCalls_;
 		uint numRenderCalls_;
 
-		public RenderBuffer()
+		public RenderBuffers()
 		{
 		}
 

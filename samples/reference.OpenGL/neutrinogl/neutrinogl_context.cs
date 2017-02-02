@@ -11,7 +11,7 @@ namespace NeutrinoGl
 
 		public Context(String texturesBasePath)
 		{
-			materials_ = new NeutrinoGl.Materials();
+			materials_ = new Materials();
 			texturesBasePath_ = texturesBasePath;
 		}
 
