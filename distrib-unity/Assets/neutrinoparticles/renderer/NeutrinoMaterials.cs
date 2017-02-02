@@ -40,10 +40,10 @@ namespace Neutrino.Unity3D
 					return;
 				}
 
-				Texture texture = Resources.Load("textures" + Path.DirectorySeparatorChar + filename) as Texture;
+				Texture texture = Resources.Load(filename) as Texture;
 				if (texture == null)
 				{
-					Debug.LogError("Unable to load texture from Resources: " + "textures" + Path.DirectorySeparatorChar + filename);
+					Debug.LogError("Unable to load texture from Resources: " + filename);
 					return;
 				}
 
