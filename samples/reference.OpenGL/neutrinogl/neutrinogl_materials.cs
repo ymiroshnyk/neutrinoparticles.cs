@@ -1,9 +1,9 @@
 using OpenGL;
 using System.Diagnostics;
 
-partial class NeutrinoGl
+namespace NeutrinoGl
 {
-	public class MaterialsGl
+	public class Materials
 	{
 		ShaderProgram program_, programMultiply_;
 		int positionAttribLocation_;
@@ -15,7 +15,7 @@ partial class NeutrinoGl
 		Matrix4 viewMatrix_;
 		Matrix4 modelMatrix_;
 
-		public MaterialsGl()
+		public Materials()
 		{
 			program_ = new ShaderProgram(VertexShader, FragmentShader);
 			programMultiply_ = new ShaderProgram(VertexShader, FragmentShaderMultiply);

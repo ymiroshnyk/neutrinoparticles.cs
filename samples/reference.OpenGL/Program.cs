@@ -10,8 +10,8 @@ namespace OpenGLTutorial6
 	{
 		private static int width = 1280, height = 720;
 		private static System.Diagnostics.Stopwatch watch;
-		private static NeutrinoGl.MaterialsGl materials_;
-		private static NeutrinoGl.RendererGl renderer_;
+		private static NeutrinoGl.Context context_;
+		private static NeutrinoGl.Renderer renderer_;
 		private static float time_;
 		private static float displace = 200.0f;
 
@@ -29,9 +29,9 @@ namespace OpenGLTutorial6
 			Glut.glutCloseFunc(OnClose);
 
 			time_ = 0;
-			materials_ = new NeutrinoGl.MaterialsGl();
-			renderer_ = new NeutrinoGl.RendererGl(materials_, new Neutrino.Effect_A_lot_of_particles(), 
-				"..\\..\\effects\\textures\\", Neutrino.NMath.vec3_(displace, 0, 0));
+			context_ = new NeutrinoGl.Context("..\\..\\effects\\textures\\");
+			renderer_ = new NeutrinoGl.Renderer(context_, new Neutrino.Effect_A_lot_of_particles(), 
+				Neutrino.NMath.vec3_(displace, 0, 0));
 
 			// load a crate texture
 			watch = System.Diagnostics.Stopwatch.StartNew();
@@ -42,7 +42,7 @@ namespace OpenGLTutorial6
 		private static void OnClose()
 		{
 			renderer_.shutdown();
-			materials_.shutdown();
+			context_.shutdown();
 		}
 
 		private static void OnDisplay()

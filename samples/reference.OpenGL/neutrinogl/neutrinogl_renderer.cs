@@ -2,22 +2,22 @@ using OpenGL;
 using System;
 using System.Runtime.InteropServices;
 
-partial class NeutrinoGl
+namespace NeutrinoGl
 {
-	public class RendererGl
+	public class Renderer
 	{
-		MaterialsGl materials_;
-		RenderBufferGl renderBuffer_;
+		NeutrinoGl.Context context_;
+		RenderBuffer renderBuffer_;
 		Neutrino.System system_;
 		Neutrino.NMath.vec3 position_;
 
 		Texture[] textures_;
 
-		public RendererGl(MaterialsGl materials, Neutrino.System.Impl systemImpl, String texturesPrefix, Neutrino.NMath.vec3 position)
+		public Renderer(NeutrinoGl.Context context, Neutrino.System.Impl systemImpl, Neutrino.NMath.vec3 position)
 		{
-			materials_ = materials;
+			context_ = context;
 
-			renderBuffer_ = new RenderBufferGl();
+			renderBuffer_ = new RenderBuffer();
 			Neutrino.NMath.copyv3(out position_, position);
 
 			system_ = new Neutrino.System(systemImpl, renderBuffer_, position_);
@@ -26,7 +26,7 @@ partial class NeutrinoGl
 			textures_ = new Texture[numTextures];
 			for (uint texIndex = 0; texIndex < numTextures; ++texIndex)
 			{
-				textures_[texIndex] = new Texture(texturesPrefix + systemImpl.textures()[texIndex]);
+				textures_[texIndex] = new Texture(context_.texturesBasePath() + systemImpl.textures()[texIndex]);
 			}
 		}
 
@@ -46,7 +46,9 @@ partial class NeutrinoGl
 
 		public void render(ref Matrix4 projMatrix, ref Matrix4 viewMatrix, ref Matrix4 modelMatrix)
 		{
-			materials_.setup(ref projMatrix, ref viewMatrix, ref modelMatrix);
+			NeutrinoGl.Materials materials = context_.materials();
+
+			materials.setup(ref projMatrix, ref viewMatrix, ref modelMatrix);
 
 			Matrix4 cameraMatrix = viewMatrix.Inverse();
 
@@ -71,19 +73,19 @@ partial class NeutrinoGl
 			renderBuffer_.updateGlBuffers();
 
 			// bind the vertex positions, UV coordinates and element array
-			Gl.EnableVertexAttribArray((uint)materials_.positionAttribLocation());
+			Gl.EnableVertexAttribArray((uint)materials.positionAttribLocation());
 			Gl.BindBuffer(BufferTarget.ArrayBuffer, renderBuffer_.positionsId());
-			Gl.VertexAttribPointer((uint)materials_.positionAttribLocation(), 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
+			Gl.VertexAttribPointer((uint)materials.positionAttribLocation(), 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
 
-			Gl.EnableVertexAttribArray((uint)materials_.colorAttribLocation());
+			Gl.EnableVertexAttribArray((uint)materials.colorAttribLocation());
 			Gl.BindBuffer(BufferTarget.ArrayBuffer, renderBuffer_.colorsId());
-			Gl.VertexAttribPointer((uint)materials_.colorAttribLocation(), 4, VertexAttribPointerType.UnsignedByte, true, 0, IntPtr.Zero);
+			Gl.VertexAttribPointer((uint)materials.colorAttribLocation(), 4, VertexAttribPointerType.UnsignedByte, true, 0, IntPtr.Zero);
 
 			if (renderBuffer_.numTexChannels() > 0)
 			{
-				Gl.EnableVertexAttribArray((uint)materials_.tex0AttribLocation());
+				Gl.EnableVertexAttribArray((uint)materials.tex0AttribLocation());
 				Gl.BindBuffer(BufferTarget.ArrayBuffer, renderBuffer_.texChannelId(0));
-				Gl.VertexAttribPointer((uint)materials_.tex0AttribLocation(), (int)renderBuffer_.texChannelDimensions(0), VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
+				Gl.VertexAttribPointer((uint)materials.tex0AttribLocation(), (int)renderBuffer_.texChannelDimensions(0), VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
 			}
 
 			Gl.BindBuffer(BufferTarget.ElementArrayBuffer, renderBuffer_.indicesId());
@@ -101,9 +103,9 @@ partial class NeutrinoGl
 
 				switch (material)
 				{
-					default: materials_.switchToNormal(); break;
-					case Neutrino.RenderMaterial.Add: materials_.switchToAdd(); break;
-					case Neutrino.RenderMaterial.Multiply: materials_.switchToMultiply(); break;
+					default: materials.switchToNormal(); break;
+					case Neutrino.RenderMaterial.Add: materials.switchToAdd(); break;
+					case Neutrino.RenderMaterial.Multiply: materials.switchToMultiply(); break;
 				}
 
 				Gl.DrawElements(BeginMode.Triangles, (int)rc.numIndices_, DrawElementsType.UnsignedShort, (IntPtr)((uint)rc.startIndex_ * Marshal.SizeOf(typeof(ushort))));

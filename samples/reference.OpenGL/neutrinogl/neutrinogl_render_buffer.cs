@@ -2,9 +2,9 @@ using System;
 using System.Runtime.InteropServices;
 using OpenGL;
 
-partial class NeutrinoGl
+namespace NeutrinoGl
 {
-	public class RenderBufferGl : Neutrino.RenderBuffer
+	public class RenderBuffer : Neutrino.RenderBuffer
 	{
 		class TexChannel
 		{
@@ -29,7 +29,7 @@ partial class NeutrinoGl
 		Neutrino.RenderCall[] renderCalls_;
 		uint numRenderCalls_;
 
-		public RenderBufferGl()
+		public RenderBuffer()
 		{
 		}
 

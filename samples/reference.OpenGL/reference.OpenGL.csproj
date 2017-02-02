@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="effects\export\A_lot_of_particles.cs" />
+    <Compile Include="neutrinogl\neutrinogl_context.cs" />
     <Compile Include="neutrinogl\neutrinogl_materials.cs" />
     <Compile Include="neutrinogl\neutrinogl_renderer.cs" />
     <Compile Include="neutrinogl\neutrinogl_render_buffer.cs" />
