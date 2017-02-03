@@ -60,18 +60,7 @@ namespace Neutrino.Unity3D
 		{
 			mesh = new Mesh();
 			mesh.MarkDynamic();
-
-			meshFilter = gameObject.GetComponent<MeshFilter>();
-
-			if (!meshFilter)
-				meshFilter = gameObject.AddComponent<MeshFilter>();
-
-			meshFilter.mesh = mesh;
-		}
-
-		void OnDestroy()
-		{
-			int i = 0;
+			gameObject.GetComponent<MeshFilter>().mesh = mesh;
 		}
 
 		public void initialize(uint maxNumVertices, uint[] texChannels, ushort[] indices, uint maxNumRenderCalls)
