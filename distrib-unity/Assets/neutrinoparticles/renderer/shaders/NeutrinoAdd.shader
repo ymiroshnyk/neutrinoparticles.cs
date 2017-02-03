@@ -1,4 +1,4 @@
-﻿Shader "Neutrino/Neutrino - Additive"
+﻿Shader "Neutrino/Add"
 {
 	Properties
 	{

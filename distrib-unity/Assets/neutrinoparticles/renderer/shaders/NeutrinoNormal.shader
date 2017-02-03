@@ -1,4 +1,4 @@
-﻿Shader "Neutrino/Neutrino - AlphaBlended"
+﻿Shader "Neutrino/Normal"
 {
 	Properties
 	{

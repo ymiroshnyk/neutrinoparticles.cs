@@ -1,4 +1,4 @@
-﻿Shader "Neutrino/Neutrino - Multiply"
+﻿Shader "Neutrino/Multiply"
 {
 	Properties
 	{
