@@ -14,72 +14,65 @@ namespace Neutrino.Unity3D
 	{
 		#region Fields
 		public bool simulateInWorldSpace = true;
-		new Neutrino.System particleSystem;
-		Neutrino.System.Impl particleSytemImpl;
-		Neutrino.NMath.vec3 pos;
-		private NMath.quat rot;
 
-		Material[] materials;
+		private Neutrino.System.Impl neutrinoSystemImpl_;
+		private Neutrino.System neutrinoSystem_;
 
-		private Shader standard;
-		private Shader multiply;
-		private Shader additive;
+		private Material[] materials_;
+		private Shader shaderNormal_;
+		private Shader shaderAdd_;
+		private Shader shaderMultiply_;
 
-		NeutrinoRenderBuffer renderBuffer;
+		NeutrinoRenderBuffer renderBuffer_;
 		#endregion
 
 		#region Methods
 
 		void Awake()
 		{
-			standard = Shader.Find("Neutrino/Neutrino - AlphaBlended");
-			multiply = Shader.Find("Neutrino/Neutrino - Multiply");
-			additive = Shader.Find("Neutrino/Neutrino - Additive");
+			shaderNormal_ = Shader.Find("Neutrino/Normal");
+			shaderAdd_ = Shader.Find("Neutrino/Add");
+			shaderMultiply_ = Shader.Find("Neutrino/Multiply");
 		}
 
 		void Start()
 		{
-			if (simulateInWorldSpace)
-				Neutrino.NMath.setv3(out pos, gameObject.transform.position.x, gameObject.transform.position.y, gameObject.transform.position.z);
-			else
-			{
-				Neutrino.NMath.setv3(out pos, 0f, 0f, 0f);
-				Neutrino.NMath.setq(out rot, 0f, 0f, 0f, 0f);
-			}
-
 			Component[] components = GetComponents<MonoBehaviour>();
 			foreach (Component c in components)
 			{
 				if (c is Neutrino.System.Impl)
-					particleSytemImpl = c as Neutrino.System.Impl;
+					neutrinoSystemImpl_ = c as Neutrino.System.Impl;
 			}
 
-			renderBuffer = GetComponent<NeutrinoRenderBuffer>();
-			particleSystem = new Neutrino.System(particleSytemImpl, renderBuffer, pos);
+			renderBuffer_ = GetComponent<NeutrinoRenderBuffer>();
+			neutrinoSystem_ = new Neutrino.System(neutrinoSystemImpl_, renderBuffer_,
+				simulateInWorldSpace ? 
+					Neutrino.NMath.vec3_(gameObject.transform.position.x, gameObject.transform.position.y, gameObject.transform.position.z) :
+					Neutrino.NMath.vec3_(0, 0, 0));
 
 			// preparing materials
 			{
-				string[] textures = particleSytemImpl.textures();
-				RenderStyle[] renderStyles = particleSytemImpl.renderStyles();
+				string[] textures = neutrinoSystemImpl_.textures();
+				RenderStyle[] renderStyles = neutrinoSystemImpl_.renderStyles();
 
-				materials = new Material[renderStyles.Length];
+				materials_ = new Material[renderStyles.Length];
 
 				for (int i = 0; i < renderStyles.Length; ++i)
 				{
 					Material material;
 
-					switch (particleSytemImpl.materials()[renderStyles[i].material_])
+					switch (neutrinoSystemImpl_.materials()[renderStyles[i].material_])
 					{
 						default:
-							material = new Material(standard);
+							material = new Material(shaderNormal_);
 							break;
 
 						case Neutrino.RenderMaterial.Add:
-							material = new Material(additive);
+							material = new Material(shaderAdd_);
 							break;
 
 						case Neutrino.RenderMaterial.Multiply:
-							material = new Material(multiply);
+							material = new Material(shaderMultiply_);
 							break;
 					}
 
@@ -103,53 +96,49 @@ namespace Neutrino.Unity3D
 					material.name = filename;				
 					material.SetTexture("_MainTex", texture);
 
-					materials[i] = material;
+					materials_[i] = material;
 				}
 			}
 		}
 
-		// Update is called once per frame
 		void Update()
 		{
-			if (simulateInWorldSpace)
-			{
-				//Workaround for flipped moving effects
-				//Mathf.Sign(transform.localScale.x) * transform.position.x,
-				//	Mathf.Sign(transform.localScale.y) * transform.position.y,
-				//	Mathf.Sign(transform.localScale.z) * transform.position.z);
-				Neutrino.NMath.setv3(out pos, transform.position.x, transform.position.y, transform.position.z);
-				Neutrino.NMath.setq(out rot, transform.rotation.w, transform.rotation.x, transform.rotation.y, transform.rotation.z);
-			}
-
-			particleSystem.update(Time.deltaTime, pos);
-
-			//TODO: to support multiple cameras rendering - will probably require to switch rendering routine to CommandBuffer
 			Transform camTrans = Camera.main.transform;
 
+			Neutrino.NMath.vec3 cameraRight =
+				Neutrino.NMath.vec3_(camTrans.right.x, camTrans.right.y, camTrans.right.z);
+			Neutrino.NMath.vec3 cameraUp = 
+				Neutrino.NMath.vec3_(camTrans.up.x, camTrans.up.y, camTrans.up.z);
+			Neutrino.NMath.vec3 cameraDir =
+				Neutrino.NMath.vec3_(camTrans.forward.x, camTrans.forward.y, camTrans.forward.z);
+
+			Neutrino.NMath.quat rot = Neutrino.NMath.quat_(transform.rotation.w, transform.rotation.x, transform.rotation.y, transform.rotation.z);
+
 			if (simulateInWorldSpace)
 			{
-				particleSystem.updateRenderBuffer(
-					Neutrino.NMath.vec3_(camTrans.right.x, camTrans.right.y, camTrans.right.z),
-					Neutrino.NMath.vec3_(camTrans.up.x, camTrans.up.y, camTrans.up.z),
-					Neutrino.NMath.vec3_(camTrans.forward.x, camTrans.forward.y, camTrans.forward.z),
-					pos, rot);
+				Neutrino.NMath.vec3 pos = Neutrino.NMath.vec3_(transform.position.x, transform.position.y, transform.position.z);
+
+				neutrinoSystem_.update(Time.deltaTime, pos);
+				neutrinoSystem_.updateRenderBuffer(cameraRight, cameraUp, cameraDir, pos, rot);
 			}
 			else
 			{
-				//Neutrino.NMath.setv3(out pos, 0f, 0f, 0f);
-				particleSystem.updateRenderBuffer(
-					Neutrino.NMath.vec3_(camTrans.right.x, camTrans.right.y, camTrans.right.z),
-					Neutrino.NMath.vec3_(camTrans.up.x, camTrans.up.y, camTrans.up.z),
-					Neutrino.NMath.vec3_(camTrans.forward.x, camTrans.forward.y, camTrans.forward.z), pos);
+				Neutrino.NMath.quat invRot = Neutrino.NMath.inverseq_(rot);
+				Neutrino.NMath.vec3 localCameraRight = Neutrino.NMath.applyv3quat_(cameraRight, invRot);
+				Neutrino.NMath.vec3 localCameraUp = Neutrino.NMath.applyv3quat_(cameraUp, invRot);
+				Neutrino.NMath.vec3 localCameraDir = Neutrino.NMath.applyv3quat_(cameraDir, invRot);
+
+				neutrinoSystem_.update(Time.deltaTime, Neutrino.NMath.vec3_(0, 0, 0));
+				neutrinoSystem_.updateRenderBuffer(localCameraRight, localCameraUp, localCameraDir, null, null);
 			}
 
-			renderBuffer.updateMesh();
+			renderBuffer_.updateMesh();
 
-			Material[] subMeshMaterials = new Material[renderBuffer.RenderCallsCount];
+			Material[] subMeshMaterials = new Material[renderBuffer_.RenderCallsCount];
 
-			for (uint renderCallIndex = 0; renderCallIndex < renderBuffer.RenderCallsCount; ++renderCallIndex)
+			for (uint renderCallIndex = 0; renderCallIndex < renderBuffer_.RenderCallsCount; ++renderCallIndex)
 			{
-				subMeshMaterials[renderCallIndex] = materials[renderBuffer.RenderCalls[renderCallIndex].renderStyleIndex_];
+				subMeshMaterials[renderCallIndex] = materials_[renderBuffer_.RenderCalls[renderCallIndex].renderStyleIndex_];
 			}
 
 			MeshRenderer mr = gameObject.GetComponent<MeshRenderer>();
