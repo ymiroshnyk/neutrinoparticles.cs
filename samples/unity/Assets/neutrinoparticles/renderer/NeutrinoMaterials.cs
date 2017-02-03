@@ -4,6 +4,7 @@ using System.IO;
 
 namespace Neutrino.Unity3D
 {
+	[ExecuteInEditMode]
 	public class NeutrinoMaterials : MonoBehaviour
 	{
 		#region Fields

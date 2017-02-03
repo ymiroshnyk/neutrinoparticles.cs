@@ -9,10 +9,12 @@ namespace Neutrino.Unity3D
 	//[ExecuteInEditMode] <--this feature is not available at the moment
 	[RequireComponent(typeof(NeutrinoMaterials))]
 	[RequireComponent(typeof(NeutrinoRenderBuffer))]
+	[RequireComponent(typeof(MeshRenderer))]
+	[ExecuteInEditMode]
 	public class NeutrinoRenderer : MonoBehaviour
 	{
 		#region Fields
-		public bool simulateInWorldSpace = false;
+		public bool simulateInWorldSpace = true;
 		new Neutrino.System particleSystem;
 		Neutrino.System.Impl particleSytemImpl;
 		Neutrino.NMath.vec3 pos;
@@ -24,6 +26,8 @@ namespace Neutrino.Unity3D
 		#endregion
 
 		#region Methods
+
+
 		private void RenderParticleSystem(CommandBuffer buf)
 		{
 			//TODO: to support multiple cameras rendering - will probably require to switch rendering routine to CommandBuffer
@@ -56,6 +60,10 @@ namespace Neutrino.Unity3D
 			}
 
 			MeshRenderer mr = gameObject.GetComponent<MeshRenderer>();
+
+			if (!mr)
+				mr = gameObject.AddComponent<MeshRenderer>();
+
 			mr.sharedMaterials = subMeshMaterials;
 		}
 
@@ -82,8 +90,6 @@ namespace Neutrino.Unity3D
 
 			nmaterials = GetComponent<NeutrinoMaterials>();
 			nmaterials.LoadTextures(particleSytemImpl.textures(), particleSytemImpl, new int[] { 0 }); //simplification while texture channels are unsupported
-
-			gameObject.AddComponent<MeshRenderer>();
 		}
 
 		// Update is called once per frame
@@ -99,7 +105,7 @@ namespace Neutrino.Unity3D
 				Neutrino.NMath.setq(out rot, transform.rotation.w, transform.rotation.x, transform.rotation.y, transform.rotation.z);
 			}
 
-			particleSystem.update(Time.smoothDeltaTime, pos);
+			particleSystem.update(Time.deltaTime, pos);
 			RenderParticleSystem(null);
 		}
 		#endregion

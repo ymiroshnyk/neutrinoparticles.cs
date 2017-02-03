@@ -7,9 +7,14 @@ using System.Collections.Generic;
 
 namespace Neutrino.Unity3D
 {
+	[RequireComponent(typeof(MeshFilter))]
+	[ExecuteInEditMode]
 	public class NeutrinoRenderBuffer : MonoBehaviour, Neutrino.RenderBuffer
 	{
 		#region Fields
+		private Mesh mesh = null;
+		private MeshFilter meshFilter = null;
+
 		private List<Vector3> vertices;
 		private List<Vector2> uv;
 		private int[] allIndices;
@@ -17,7 +22,6 @@ namespace Neutrino.Unity3D
 		private List<Color> colors;
 
 		private int vertexCount;
-		private Mesh mesh;
 
 		private RenderCall[] renderCalls;
 		private int renderCallsCount;
@@ -51,6 +55,40 @@ namespace Neutrino.Unity3D
 		#endregion
 
 		#region Methods
+
+		void Start()
+		{
+			mesh = new Mesh();
+			mesh.MarkDynamic();
+
+			meshFilter = gameObject.GetComponent<MeshFilter>();
+
+			if (!meshFilter)
+				meshFilter = gameObject.AddComponent<MeshFilter>();
+
+			meshFilter.mesh = mesh;
+		}
+
+		void OnDestroy()
+		{
+			int i = 0;
+		}
+
+		public void initialize(uint maxNumVertices, uint[] texChannels, ushort[] indices, uint maxNumRenderCalls)
+		{
+			renderCallsCount = 0;
+			vertexCount = 0;
+
+			vertices = new List<Vector3>((int)maxNumVertices);
+			uv = new List<Vector2>((int)maxNumVertices);
+			colors = new List<Color>((int)maxNumVertices);
+
+			this.allIndices = Array.ConvertAll(indices, (ushort s) => { return (int)s; });
+			this.indices = new List<int>(indices.Length);
+
+			renderCalls = new RenderCall[maxNumRenderCalls];
+		}
+
 		public void cleanup()
 		{
 			renderCallsCount = 0;
@@ -59,25 +97,6 @@ namespace Neutrino.Unity3D
 			vertices.Clear();
 			colors.Clear();
 			uv.Clear();
-		}
-
-		public void initialize(uint maxNumVertices, uint[] texChannels, ushort[] indices, uint maxNumRenderCalls)
-		{
-			renderCallsCount = 0;
-			vertexCount = 0;
-
-			mesh = new Mesh();
-			vertices = new List<Vector3>((int)maxNumVertices);
-			uv = new List<Vector2>((int)maxNumVertices);
-			colors = new List<Color>((int)maxNumVertices);
-
-			mesh.MarkDynamic();
-			gameObject.AddComponent<MeshFilter>().mesh = mesh;
-
-			this.allIndices = Array.ConvertAll(indices, (ushort s) => { return (int)s; });
-			this.indices = new List<int>(indices.Length);
-
-			renderCalls = new RenderCall[maxNumRenderCalls];
 		}
 
 		public void pushRenderCall(ref RenderCall rc)
