@@ -30,9 +30,11 @@ namespace OpenGLTutorial6
 			Glut.glutCloseFunc(OnClose);
 
 			time_ = 0;
+			Matrix4 modelMatrix = CreateModelMatrix(time_);
+
 			context_ = new NeutrinoGl.Context("..\\..\\effects\\textures\\");
 			effectModel_ = new NeutrinoGl.EffectModel(context_, new Neutrino.Effect_A_lot_of_particles());
-			effect_ = new NeutrinoGl.Effect(effectModel_, Neutrino.NMath.vec3_(displace, 0, 0));
+			effect_ = new NeutrinoGl.Effect(effectModel_, Neutrino.NMath.vec3_(modelMatrix[3].x, modelMatrix[3].y, modelMatrix[3].z));
 
 			// load a crate texture
 			watch = System.Diagnostics.Stopwatch.StartNew();
@@ -59,9 +61,7 @@ namespace OpenGLTutorial6
 			float deltaTime = (float)watch.ElapsedTicks / System.Diagnostics.Stopwatch.Frequency;
 			watch.Restart();
 
-			Matrix4 modelTranslationMatrix = Matrix4.CreateTranslation(new Vector3(displace, 0, 0));
-			Matrix4 modelRotationMatrix = Matrix4.CreateRotationZ(time_);
-			Matrix4 modelMatrix = modelTranslationMatrix * modelRotationMatrix;
+			Matrix4 modelMatrix = CreateModelMatrix(time_);
 
 			time_ += deltaTime;
 			effect_.update(deltaTime, Neutrino.NMath.vec3_(modelMatrix[3].x, modelMatrix[3].y, modelMatrix[3].z));
@@ -78,6 +78,13 @@ namespace OpenGLTutorial6
 			effect_.render(ref projMatrix, ref viewMatrix, ref modelMatrix);
 			
 			Glut.glutSwapBuffers();
+		}
+
+		private static Matrix4 CreateModelMatrix(float time_)
+		{
+			Matrix4 modelTranslationMatrix = Matrix4.CreateTranslation(new Vector3(displace, 0, 0));
+			Matrix4 modelRotationMatrix = Matrix4.CreateRotationZ(time_);
+			return modelTranslationMatrix * modelRotationMatrix;
 		}
 	}
 }

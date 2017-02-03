@@ -1,11 +1,14 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 using OpenGL;
 
 namespace NeutrinoGl
 {
 	public class RenderBuffers : Neutrino.RenderBuffer
 	{
+		Context context_;
+
 		class TexChannel
 		{
 			public uint dimensions_;
@@ -29,8 +32,9 @@ namespace NeutrinoGl
 		Neutrino.RenderCall[] renderCalls_;
 		uint numRenderCalls_;
 
-		public RenderBuffers()
+		public RenderBuffers(Context context)
 		{
+			context_ = context;
 		}
 
 		public void initialize(uint maxNumVertices, uint[] texChannels, ushort[] indices, uint maxNumRenderCalls)
@@ -166,6 +170,32 @@ namespace NeutrinoGl
 			}
 		}
 
+		public void bind()
+		{
+			Materials materials = context_.materials();
+
+			Gl.EnableVertexAttribArray((uint)materials.positionAttribLocation());
+			Gl.BindBuffer(BufferTarget.ArrayBuffer, positionsId_);
+			Gl.VertexAttribPointer((uint)materials.positionAttribLocation(), 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
+
+			Gl.EnableVertexAttribArray((uint)materials.colorAttribLocation());
+			Gl.BindBuffer(BufferTarget.ArrayBuffer, colorsId_);
+			Gl.VertexAttribPointer((uint)materials.colorAttribLocation(), 4, VertexAttribPointerType.UnsignedByte, true, 0, IntPtr.Zero);
+
+			if (texChannels_.Length > 0)
+			{
+				// only one texture channel currently supported by NeutrinoParticles
+				Debug.Assert(texChannels_.Length == 1);
+
+				Gl.EnableVertexAttribArray((uint)materials.tex0AttribLocation());
+				Gl.BindBuffer(BufferTarget.ArrayBuffer, texChannels_[0].id_);
+				Gl.VertexAttribPointer((uint)materials.tex0AttribLocation(), (int)texChannels_[0].dimensions_,
+					VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
+			}
+
+			Gl.BindBuffer(BufferTarget.ElementArrayBuffer, indicesId_);
+		}
+
 		public void shutdown()
 		{
 			Gl.DeleteBuffer(positionsId_);
@@ -177,15 +207,6 @@ namespace NeutrinoGl
 				Gl.DeleteBuffer(texChannels_[texIndex].id_);
 			}
 		}
-
-		public uint positionsId() { return positionsId_; }
-		public uint colorsId() { return colorsId_; }
-		public uint indicesId() { return indicesId_; }
-		public uint numTexChannels() { return (uint)texChannels_.Length; }
-		public uint texChannelDimensions(uint index) { return texChannels_[index].dimensions_; }
-		public uint texChannelId(uint index) { return texChannels_[index].id_; }
-
-		public uint numVertices() { return numVertices_; }
 
 		public Neutrino.RenderCall[] renderCalls() { return renderCalls_; }
 		public uint numRenderCalls() { return numRenderCalls_; }
