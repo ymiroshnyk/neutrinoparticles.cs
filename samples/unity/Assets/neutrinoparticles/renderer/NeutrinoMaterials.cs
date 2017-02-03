@@ -25,8 +25,10 @@ namespace Neutrino.Unity3D
 			additive = Shader.Find("Neutrino/Neutrino - Additive");
 		}
 
-		public void LoadTextures(string[] fileNames, Neutrino.RenderStyle[] renderStyles, int[] textureChannels)
+		public void LoadTextures(string[] fileNames, Neutrino.System.Impl systemImpl, int[] textureChannels)
 		{
+			RenderStyle[] renderStyles = systemImpl.renderStyles();
+			
 			materials = new Material[renderStyles.Length];
 
 			for (int i = 0; i < renderStyles.Length; ++i)
@@ -47,29 +49,31 @@ namespace Neutrino.Unity3D
 					return;
 				}
 
-				materials[i] = new Material(standard);
-				materials[i].name = filename;
-				materials[i].SetTexture("_MainTex", texture);
+				Material material;
+
+				switch (systemImpl.materials()[renderStyles[i].material_])
+				{
+					default:
+						material = new Material(standard);
+						break;
+
+					case Neutrino.RenderMaterial.Add:
+						material = new Material(additive);
+						break;
+
+					case Neutrino.RenderMaterial.Multiply:
+						material = new Material(multiply);
+						break;
+				}
+
+				
+				material.name = filename;
+				material.SetTexture("_MainTex", texture);
+
+				materials[i] = material;
 			}
 		}
 
-		public void switchToNormal(uint index)
-		{
-			if (materials[index].shader != standard)
-				materials[index].shader = standard;
-		}
-
-		public void switchToAdd(uint index)
-		{
-			if (materials[index].shader != additive)
-				materials[index].shader = additive;
-		}
-
-		public void switchToMultiply(uint index)
-		{
-			if (materials[index].shader != multiply)
-				materials[index].shader = multiply;
-		}
 		#endregion
 	}
 }

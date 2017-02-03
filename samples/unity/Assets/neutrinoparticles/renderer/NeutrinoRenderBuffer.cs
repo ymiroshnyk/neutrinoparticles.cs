@@ -10,8 +10,6 @@ namespace Neutrino.Unity3D
 	public class NeutrinoRenderBuffer : MonoBehaviour, Neutrino.RenderBuffer
 	{
 		#region Fields
-		[Tooltip("Activate the mechanism that will free memory used for indices cache. Might add some noticeable CPU overhead on complex effects")]
-		public bool autoReleaseMemory = true;
 		private List<Vector3> vertices;
 		private List<Vector2> uv;
 		private int[] allIndices;
@@ -110,21 +108,11 @@ namespace Neutrino.Unity3D
 			++vertexCount;
 		}
 
-		public void updateIndices(int startingIndex, int indexCount, int subMeshId)
-		{
-			this.indices.Clear();
-			int endIndex = startingIndex + indexCount;
-			for (int i = startingIndex; i < endIndex; ++i)
-				this.indices.Add(this.allIndices[i]);
-
-			mesh.SetTriangles(this.indices, subMeshId);
-
 			//seems like those calls are not required
 			//mesh.RecalculateBounds();
 			//mesh.RecalculateNormals(); //expensive call - uncomment only if needed
-		}
 
-		public void update(int subMeshCount)
+		public void updateMesh()
 		{
 			if (vertexCount == 0)
 				return;
@@ -134,7 +122,20 @@ namespace Neutrino.Unity3D
 			mesh.SetVertices(vertices);
 			mesh.SetColors(colors);
 			mesh.SetUVs(0, uv);
-			mesh.subMeshCount = subMeshCount;
+
+			mesh.subMeshCount = renderCallsCount;
+
+			for (uint renderCallIndex = 0; renderCallIndex < renderCallsCount; ++renderCallIndex)
+			{
+				RenderCall rc = renderCalls[renderCallIndex];
+
+				this.indices.Clear();
+				int endIndex = rc.startIndex_ + rc.numIndices_;
+				for (int i = rc.startIndex_; i < endIndex; ++i)
+					this.indices.Add(this.allIndices[i]);
+
+				mesh.SetTriangles(this.indices, (int)renderCallIndex);
+			}
 
 
 #if UNITY_EDITOR

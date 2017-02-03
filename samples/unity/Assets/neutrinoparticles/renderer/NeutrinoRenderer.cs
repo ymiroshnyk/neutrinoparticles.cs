@@ -46,28 +46,17 @@ namespace Neutrino.Unity3D
 					Neutrino.NMath.vec3_(camTrans.forward.x, camTrans.forward.y, camTrans.forward.z), pos);
             }
 
-			renderBuffer.update(particleSytemImpl.renderStyles().Length);
+			renderBuffer.updateMesh();
 
-			for (int i = 0; i < renderBuffer.RenderCallsCount; ++i)
+			Material[] subMeshMaterials = new Material[renderBuffer.RenderCallsCount];
+
+			for (uint renderCallIndex = 0; renderCallIndex < renderBuffer.RenderCallsCount; ++renderCallIndex)
 			{
-				switch (particleSytemImpl.materials()[particleSytemImpl.renderStyles()[renderBuffer.RenderCalls[i].renderStyleIndex_].material_])
-				{
-					case Neutrino.RenderMaterial.Add:
-						nmaterials.switchToAdd(renderBuffer.RenderCalls[i].renderStyleIndex_);
-						break;
-					case Neutrino.RenderMaterial.Multiply:
-						nmaterials.switchToMultiply(renderBuffer.RenderCalls[i].renderStyleIndex_);
-						break;
-					default:
-						nmaterials.switchToNormal(renderBuffer.RenderCalls[i].renderStyleIndex_);
-						break;
-				}
-
-				renderBuffer.updateIndices(
-					renderBuffer.RenderCalls[i].startIndex_,
-					renderBuffer.RenderCalls[i].numIndices_,
-					renderBuffer.RenderCalls[i].renderStyleIndex_);
+				subMeshMaterials[renderCallIndex] = nmaterials.materials[renderBuffer.RenderCalls[renderCallIndex].renderStyleIndex_];
 			}
+
+			MeshRenderer mr = gameObject.GetComponent<MeshRenderer>();
+			mr.sharedMaterials = subMeshMaterials;
 		}
 
 		// Use this for initialization
@@ -92,10 +81,9 @@ namespace Neutrino.Unity3D
 			particleSystem = new Neutrino.System(particleSytemImpl, renderBuffer, pos);
 
 			nmaterials = GetComponent<NeutrinoMaterials>();
-			nmaterials.LoadTextures(particleSytemImpl.textures(), particleSytemImpl.renderStyles(), new int[] { 0 }); //simplification while texture channels are unsupported
+			nmaterials.LoadTextures(particleSytemImpl.textures(), particleSytemImpl, new int[] { 0 }); //simplification while texture channels are unsupported
 
-			MeshRenderer mr = gameObject.AddComponent<MeshRenderer>();
-			mr.sharedMaterials = nmaterials.materials;
+			gameObject.AddComponent<MeshRenderer>();
 		}
 
 		// Update is called once per frame
