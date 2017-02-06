@@ -7,8 +7,8 @@ using System.IO;
 
 namespace Neutrino.Unity3D
 {
-	[RequireComponent(typeof(NeutrinoRenderBuffer))]
 	[RequireComponent(typeof(MeshRenderer))]
+	[RequireComponent(typeof(MeshFilter))]
 	[ExecuteInEditMode]
 	public class NeutrinoRenderer : MonoBehaviour
 	{
@@ -44,7 +44,10 @@ namespace Neutrino.Unity3D
 					neutrinoSystemImpl_ = c as Neutrino.System.Impl;
 			}
 
-			renderBuffer_ = GetComponent<NeutrinoRenderBuffer>();
+			Mesh mesh = new Mesh();
+			gameObject.GetComponent<MeshFilter>().mesh = mesh;
+			renderBuffer_ = new NeutrinoRenderBuffer(mesh);
+
 			neutrinoSystem_ = new Neutrino.System(neutrinoSystemImpl_, renderBuffer_,
 				simulateInWorldSpace ? 
 					Neutrino.NMath.vec3_(gameObject.transform.position.x, gameObject.transform.position.y, gameObject.transform.position.z) :
