@@ -7,19 +7,19 @@ namespace NeutrinoGl
 	{
 		Context context_;
 
-		Neutrino.System.Impl systemImpl_;
+		Neutrino.EffectModel neutrinoEffectModel_;
 		Texture[] textures_;
 
-		public EffectModel(Context context, Neutrino.System.Impl systemImpl)
+		public EffectModel(Context context, Neutrino.EffectModel effectModel)
 		{
 			context_ = context;
-			systemImpl_ = systemImpl;
+			neutrinoEffectModel_ = effectModel;
 
-			uint numTextures = (uint)systemImpl.textures().Length;
+			uint numTextures = (uint)effectModel.textures().Length;
 			textures_ = new Texture[numTextures];
 			for (uint texIndex = 0; texIndex < numTextures; ++texIndex)
 			{
-				textures_[texIndex] = new Texture(context_.texturesBasePath() + systemImpl.textures()[texIndex]);
+				textures_[texIndex] = new Texture(context_.texturesBasePath() + effectModel.textures()[texIndex]);
 			}
 		}
 
@@ -31,7 +31,7 @@ namespace NeutrinoGl
 
 		public Context context() { return context_; }
 
-		public Neutrino.System.Impl systemImpl() { return systemImpl_; }
+		public Neutrino.EffectModel neutrinoEffectModel() { return neutrinoEffectModel_; }
 
 		public Texture[] textures() { return textures_; }
 	}

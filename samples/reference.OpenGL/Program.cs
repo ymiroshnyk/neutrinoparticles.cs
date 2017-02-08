@@ -34,7 +34,7 @@ namespace OpenGLTutorial6
 
 			context_ = new NeutrinoGl.Context("..\\..\\effects\\textures\\");
 			effectModel_ = new NeutrinoGl.EffectModel(context_, new Neutrino.Effect_A_lot_of_particles());
-			effect_ = new NeutrinoGl.Effect(effectModel_, Neutrino.NMath.vec3_(modelMatrix[3].x, modelMatrix[3].y, modelMatrix[3].z));
+			effect_ = new NeutrinoGl.Effect(effectModel_, Neutrino._math.vec3_(modelMatrix[3].x, modelMatrix[3].y, modelMatrix[3].z));
 
 			// load a crate texture
 			watch = System.Diagnostics.Stopwatch.StartNew();
@@ -64,7 +64,7 @@ namespace OpenGLTutorial6
 			Matrix4 modelMatrix = CreateModelMatrix(time_);
 
 			time_ += deltaTime;
-			effect_.update(deltaTime, Neutrino.NMath.vec3_(modelMatrix[3].x, modelMatrix[3].y, modelMatrix[3].z));
+			effect_.update(deltaTime, Neutrino._math.vec3_(modelMatrix[3].x, modelMatrix[3].y, modelMatrix[3].z));
 			
 			// set up the OpenGL viewport and clear both the color and depth bits
 			Gl.Viewport(0, 0, width, height);

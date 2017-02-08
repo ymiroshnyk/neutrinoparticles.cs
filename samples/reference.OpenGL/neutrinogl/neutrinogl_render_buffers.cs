@@ -17,7 +17,7 @@ namespace NeutrinoGl
 		}
 
 		uint positionsId_;
-		Neutrino.NMath.vec3[] positions_;
+		Neutrino._math.vec3[] positions_;
 
 		uint colorsId_;
 		uint[] colors_;
@@ -40,9 +40,9 @@ namespace NeutrinoGl
 		public void initialize(uint maxNumVertices, uint[] texChannels, ushort[] indices, uint maxNumRenderCalls)
 		{
 			{
-				uint positionsDataSize = (uint)(maxNumVertices * Marshal.SizeOf(typeof(Neutrino.NMath.vec3)));
+				uint positionsDataSize = (uint)(maxNumVertices * Marshal.SizeOf(typeof(Neutrino._math.vec3)));
 				positionsId_ = Gl.GenBuffer();
-				positions_ = new Neutrino.NMath.vec3[maxNumVertices];
+				positions_ = new Neutrino._math.vec3[maxNumVertices];
 
 				Gl.BindBuffer(BufferTarget.ArrayBuffer, positionsId_);
 				Gl.BufferData(BufferTarget.ArrayBuffer, (IntPtr)positionsDataSize, IntPtr.Zero, BufferUsageHint.DynamicDraw);
@@ -140,7 +140,7 @@ namespace NeutrinoGl
 				IntPtr pointer = handle.AddrOfPinnedObject();
 
 				Gl.BindBuffer(BufferTarget.ArrayBuffer, positionsId_);
-				Gl.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)0, (IntPtr)(numVertices_ * Marshal.SizeOf(typeof(Neutrino.NMath.vec3))), pointer);
+				Gl.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)0, (IntPtr)(numVertices_ * Marshal.SizeOf(typeof(Neutrino._math.vec3))), pointer);
 
 				handle.Free();
 			}
