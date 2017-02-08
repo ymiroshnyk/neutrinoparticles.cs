@@ -8,7 +8,7 @@ The library is distributed with a single Neutrino.dll file.
 Below you will find samples on how to use it with clean OpenGL API.
 
 Currently available integrations:
-* [Unity3D official plugin](/distrib-unity/) ([https://unity3d.com/](https://unity3d.com/))
+* [Unity3D official plugin](/dist-unity/) ([https://unity3d.com/](https://unity3d.com/))
 
 ## Introduction
 NeutrinoParticles Editor exports effects to generic .cs file, which contains effect's properties and algorithms of particles' behaviour.
