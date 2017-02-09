@@ -7,9 +7,7 @@ using System.Collections.Generic;
 
 namespace Neutrino.Unity3D
 {
-	[RequireComponent(typeof(MeshFilter))]
-	[ExecuteInEditMode]
-	public class NeutrinoRenderBuffer : MonoBehaviour, Neutrino.RenderBuffer
+	public class NeutrinoRenderBuffer : Neutrino.RenderBuffer
 	{
 		#region Fields
 		private Mesh mesh_;
@@ -58,11 +56,10 @@ namespace Neutrino.Unity3D
 
 		#region Methods
 
-		void Start()
+		public NeutrinoRenderBuffer(Mesh mesh)
 		{
-			mesh_ = new Mesh();
+			mesh_ = mesh;
 			mesh_.MarkDynamic();
-			gameObject.GetComponent<MeshFilter>().mesh = mesh_;
 		}
 
 		public void initialize(uint maxNumVertices, uint[] texChannels, ushort[] indices, uint maxNumRenderCalls)
