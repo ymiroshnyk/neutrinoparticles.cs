@@ -20,14 +20,14 @@ Exported effect file has no textures inside it, but only their file names. All i
 Effect is divided into two parts: model and instance. Model is described as a class in exported from the editor .cs file. So, in general, to render effect you need to make next steps:
 
 1. Attach effect's .cs file to the project in any suitable way.
-2. Create object of the effect's model.
+2. Create effect's model described in that class.
 3. Load textures described in the model.
 4. Create effect's instances. Each instance has own position and life time and will be simulated independently.
 5. On each frame, update and render the effect's instances.
 
 To make fully fledged integration of Neutrino effect to any engine/framework you will need to write custom code which makes these steps above.
 
-As a reference, you can use sample reference.OpenGL, it shows you how to make such code for clean OpenGL environment (without any external texture loader, shaders loader etc.). You can find this sample in /samples/reference.OpenGL directory of the repository. And below you can find it's description.
+As a reference, you can use sample reference.OpenGL. It shows you how to make such code for clean OpenGL environment (without any external texture loader, shaders loader etc.). You can find this sample in /samples/reference.OpenGL directory of the repository. And below you can find it's description.
 
 ## samples/reference.OpenGL
 
@@ -41,7 +41,19 @@ Additionaly, several classes were made. These classes make all that five steps f
 * **NeutrinoGl.EffectModel** - wraps generic Neutrino.EffectModel and loads textures for it.
 * **NeutrinoGl.Effect** - wraps generic Neutrino.Effect. Contains RenderBuffers which is passed to Neutrino.Effect to receive geometry.
 
+## Instant effect position change (jump)
 
+When you moving your effect by changing it's position, the library thinks that effect is moved to new position linearly. In this case effects which generate particles from passed distance will form trail of particles to the new position.
+
+If you want to jump to the new position and avoid such trails, you need to reset effect's position. For that you can use ```Neutrino.Effect.resetPosition(_math.vec3 position)``` method of the effect. 
+
+## Changing emitter's properties
+
+Particle emitters in the NeutrinoParticles Editor have "Emitter's property" blocks (on top of emitter scheme). These blocks allow to pass parameters from parent to attached emitters (like particle color, size etc.). Also these blocks are exposed by the NeutrinoParticles library in the effect instances and you can programmatically change these properties in standalone emitters (not attached to particles). So, you can easily change effect's color or anything you planned while creating the effect.
+
+To make that, you can use ```Neutrino.Effect.setEmitterPropertyValue(string emitterName, string propName, [float|_math.vec2|_math.vec3|_math.quat] value)```.
+
+If you want to set value of a property with specific name in all emitters of effect, just pass null instead of emitterName.
 
 
 
