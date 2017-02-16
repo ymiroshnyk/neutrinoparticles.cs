@@ -85,13 +85,34 @@ namespace Neutrino
 				return new ConstructorQuads(emitter, new ConstructorImpl());
 			}
 
+			public void setPropertyValue(object emitterData, string name, float value)
+			{
+			}
+
+			public void setPropertyValue(object emitterData, string name, _math.vec2 value)
+			{
+			}
+
+			public void setPropertyValue(object emitterData, string name, _math.vec3 value)
+			{
+			}
+
+			public void setPropertyValue(object emitterData, string name, _math.quat value)
+			{
+			}
+
+			string name_ = "Fire";
+			public string name() { return name_; }
+
 			public uint maxNumParticles() { return 100; }
 
 			public Emitter.Sorting sorting() { return Emitter.Sorting.OldToYoung; }
 
 			public void updateEmitter(Emitter emitter)
 			{
-				GeneratorPeriodic generatorImpl = (GeneratorPeriodic)emitter.generator();
+				EmitterData emitterData = (EmitterData)emitter.data();
+				GeneratorPeriodic generator = (GeneratorPeriodic)emitter.generator(); 
+				GeneratorImpl generatorImpl = (GeneratorImpl)generator.impl();
 			}
 
 			public void initParticle(Emitter emitter, Particle particle)
@@ -100,7 +121,8 @@ namespace Neutrino
 				float dt = 0;
 				EmitterData emitterData = (EmitterData)emitter.data();
 
-				GeneratorPeriodic generatorImpl = (GeneratorPeriodic)emitter.generator();
+				GeneratorPeriodic generator = (GeneratorPeriodic)emitter.generator(); 
+				GeneratorImpl generatorImpl = (GeneratorImpl)generator.impl();
 				particleImpl._lifetime = 0F;
 				_math.vec3 value_ = _math.vec3_(0F, 0F, 0F);
 				particleImpl._Position = _math.addv3_(value_, emitter.position());
@@ -119,7 +141,8 @@ namespace Neutrino
 				float dt = 0;
 				EmitterData emitterData = (EmitterData)emitter.data();
 
-				GeneratorPeriodic generatorImpl = (GeneratorPeriodic)emitter.generator();
+				GeneratorPeriodic generator = (GeneratorPeriodic)emitter.generator(); 
+				GeneratorImpl generatorImpl = (GeneratorImpl)generator.impl();
 				particleImpl._lifetime = 0F;
 				_math.vec3 value_ = _math.vec3_(0F, 0F, 0F);
 				particleImpl._Position = _math.addv3_(value_, emitter.position());
@@ -137,7 +160,8 @@ namespace Neutrino
 				ParticleImpl particleImpl = (ParticleImpl)particle;
 				EmitterData emitterData = (EmitterData)emitter.data();
 
-				GeneratorPeriodic generatorImpl = (GeneratorPeriodic)emitter.generator();
+				GeneratorPeriodic generator = (GeneratorPeriodic)emitter.generator(); 
+				GeneratorImpl generatorImpl = (GeneratorImpl)generator.impl();
 				particleImpl._lifetime += dt;
 				_math.vec3 value_ = _math.vec3_(0F, 400F, 0F);
 				_math.vec3 noise_a = _math.mulv3scalar_(_math.vec3_(100F,50F,30F), emitter.effect().time());
@@ -275,13 +299,34 @@ namespace Neutrino
 				return new ConstructorQuads(emitter, new ConstructorImpl());
 			}
 
+			public void setPropertyValue(object emitterData, string name, float value)
+			{
+			}
+
+			public void setPropertyValue(object emitterData, string name, _math.vec2 value)
+			{
+			}
+
+			public void setPropertyValue(object emitterData, string name, _math.vec3 value)
+			{
+			}
+
+			public void setPropertyValue(object emitterData, string name, _math.quat value)
+			{
+			}
+
+			string name_ = "Sparks";
+			public string name() { return name_; }
+
 			public uint maxNumParticles() { return 100; }
 
 			public Emitter.Sorting sorting() { return Emitter.Sorting.OldToYoung; }
 
 			public void updateEmitter(Emitter emitter)
 			{
-				GeneratorPeriodic generatorImpl = (GeneratorPeriodic)emitter.generator();
+				EmitterData emitterData = (EmitterData)emitter.data();
+				GeneratorPeriodic generator = (GeneratorPeriodic)emitter.generator(); 
+				GeneratorImpl generatorImpl = (GeneratorImpl)generator.impl();
 			}
 
 			public void initParticle(Emitter emitter, Particle particle)
@@ -290,7 +335,8 @@ namespace Neutrino
 				float dt = 0;
 				EmitterData emitterData = (EmitterData)emitter.data();
 
-				GeneratorPeriodic generatorImpl = (GeneratorPeriodic)emitter.generator();
+				GeneratorPeriodic generator = (GeneratorPeriodic)emitter.generator(); 
+				GeneratorImpl generatorImpl = (GeneratorImpl)generator.impl();
 				particleImpl._lifetime = 0F;
 				float rnd_ = 0F + _math.rand_() * (1F - 0F);
 				float _path_in = _math.clamp_(rnd_, 0, 1);
@@ -319,7 +365,8 @@ namespace Neutrino
 				float dt = 0;
 				EmitterData emitterData = (EmitterData)emitter.data();
 
-				GeneratorPeriodic generatorImpl = (GeneratorPeriodic)emitter.generator();
+				GeneratorPeriodic generator = (GeneratorPeriodic)emitter.generator(); 
+				GeneratorImpl generatorImpl = (GeneratorImpl)generator.impl();
 				particleImpl._lifetime = 0F;
 				float rnd_ = 0F + _math.rand_() * (1F - 0F);
 				float _path_in = _math.clamp_(rnd_, 0, 1);
@@ -347,7 +394,8 @@ namespace Neutrino
 				ParticleImpl particleImpl = (ParticleImpl)particle;
 				EmitterData emitterData = (EmitterData)emitter.data();
 
-				GeneratorPeriodic generatorImpl = (GeneratorPeriodic)emitter.generator();
+				GeneratorPeriodic generator = (GeneratorPeriodic)emitter.generator(); 
+				GeneratorImpl generatorImpl = (GeneratorImpl)generator.impl();
 				particleImpl._lifetime += dt;
 				_math.vec3 value_ = _math.vec3_(0F, 800F, 0F);
 				_math.vec3 noise_a = _math.mulv3scalar_(_math.vec3_(100F,50F,30F), emitter.effect().time());

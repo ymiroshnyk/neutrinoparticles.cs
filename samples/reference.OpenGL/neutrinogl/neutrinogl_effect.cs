@@ -25,6 +25,11 @@ namespace NeutrinoGl
 			renderBuffer_.shutdown();
 		}
 
+		Neutrino.Effect neutrinoEffect()
+		{
+			return neutrinoEffect_;
+		}
+
 		public void update(float dt, Neutrino._math.vec3 position)
 		{
 			Neutrino._math.copyv3(out position_, position);
