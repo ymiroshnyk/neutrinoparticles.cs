@@ -51,7 +51,10 @@ namespace Neutrino.Unity3D
 			neutrinoEffect_ = new Neutrino.Effect(neutrinoEffectModel_, renderBuffer_,
 				simulateInWorldSpace ? 
 					Neutrino._math.vec3_(gameObject.transform.position.x, gameObject.transform.position.y, gameObject.transform.position.z) :
-					Neutrino._math.vec3_(0, 0, 0));
+					Neutrino._math.vec3_(0, 0, 0),
+				simulateInWorldSpace ?
+					Neutrino._math.quat_(transform.rotation.w, transform.rotation.x, transform.rotation.y, transform.rotation.z) :
+					Neutrino._math.quat_(1, 0, 0, 0));
 
 			// preparing materials
 			{
@@ -121,7 +124,7 @@ namespace Neutrino.Unity3D
 			{
 				Neutrino._math.vec3 pos = Neutrino._math.vec3_(transform.position.x, transform.position.y, transform.position.z);
 
-				neutrinoEffect_.update(Time.deltaTime, pos);
+				neutrinoEffect_.update(Time.deltaTime, pos, rot);
 				neutrinoEffect_.updateRenderBuffer(cameraRight, cameraUp, cameraDir, pos, rot);
 			}
 			else
@@ -131,7 +134,7 @@ namespace Neutrino.Unity3D
 				Neutrino._math.vec3 localCameraUp = Neutrino._math.applyv3quat_(cameraUp, invRot);
 				Neutrino._math.vec3 localCameraDir = Neutrino._math.applyv3quat_(cameraDir, invRot);
 
-				neutrinoEffect_.update(Time.deltaTime, Neutrino._math.vec3_(0, 0, 0));
+				neutrinoEffect_.update(Time.deltaTime, null, null);
 				neutrinoEffect_.updateRenderBuffer(localCameraRight, localCameraUp, localCameraDir, null, null);
 			}
 

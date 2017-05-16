@@ -9,15 +9,25 @@ namespace NeutrinoGl
 		EffectModel model_;
 		RenderBuffers renderBuffer_;
 		Neutrino._math.vec3 position_;
+		Neutrino._math.quat rotation_;
 		Neutrino.Effect neutrinoEffect_;
 
-		public Effect(EffectModel model, Neutrino._math.vec3 position)
+		public Effect(EffectModel model, Neutrino._math.vec3? position, Neutrino._math.quat? rotation)
 		{
 			model_ = model;
-			Neutrino._math.copyv3(out position_, position);
+
+			if (position != null)
+				Neutrino._math.copyv3(out position_, position.Value);
+			else
+				Neutrino._math.setv3(out position_, 0, 0, 0);
+
+			if (rotation != null)
+				Neutrino._math.copyq(out rotation_, rotation.Value);
+			else
+				Neutrino._math.copyq(out rotation_, Neutrino._math.quat_(1, 0, 0, 0));
 
 			renderBuffer_ = new RenderBuffers(model_.context());
-			neutrinoEffect_ = new Neutrino.Effect(model_.neutrinoEffectModel(), renderBuffer_, position_);
+			neutrinoEffect_ = new Neutrino.Effect(model_.neutrinoEffectModel(), renderBuffer_, position, rotation);
 		}
 
 		public void shutdown()
@@ -30,10 +40,15 @@ namespace NeutrinoGl
 			return neutrinoEffect_;
 		}
 
-		public void update(float dt, Neutrino._math.vec3 position)
+		public void update(float dt, Neutrino._math.vec3? position, Neutrino._math.quat? rotation)
 		{
-			Neutrino._math.copyv3(out position_, position);
-			neutrinoEffect_.update(dt, position_);
+			if (position != null)
+				Neutrino._math.copyv3(out position_, position.Value);
+
+			if (rotation != null)
+				Neutrino._math.copyq(out rotation_, rotation.Value);
+
+			neutrinoEffect_.update(dt, position, rotation);
 		}
 
 		public void render(ref Matrix4 projMatrix, ref Matrix4 viewMatrix, ref Matrix4 modelMatrix)

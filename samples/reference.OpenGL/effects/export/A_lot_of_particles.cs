@@ -1,4 +1,4 @@
-// 16b38154-354c-472b-806f-e9bf7c708997
+// 7fd9d193-224e-48c1-8282-ea233306a0e9
 
 #pragma warning disable 219
 
@@ -13,10 +13,10 @@ namespace Neutrino
 			{
 				public float _lifetime;
 				public _math.vec3 _Position;
-				public _math.vec3 _Velocity;
 				public float _Angle;
 				public float _Size;
 				public _math.vec3 _Color;
+				public _math.vec3 _Velocity;
 				public override _math.vec2 origin() { return _math.vec2_(0.5F,0.5F); }
 				public override float angle() { return _Angle; }
 				public override _math.quat rotation() { return _math.quat_(1, 0, 0, 0); }
@@ -121,26 +121,27 @@ namespace Neutrino
 				GeneratorImpl generatorImpl = (GeneratorImpl)generator.impl();
 				particleImpl._lifetime = 0F;
 				_math.vec3 value_ = _math.vec3_(0F, 0F, 0F);
-				particleImpl._Position = _math.addv3_(value_, emitter.position());
-				float rnd_ = 0F + _math.rand_() * (800F - 0F);
-				_math.vec3 randvec_ = _math.randv3_(rnd_);
-				_math.vec3 expr_ = _math.addv3_(emitter.velocity(), randvec_);
-				particleImpl._Velocity = expr_;
+				particleImpl._Position = _math.applyv3quat_(value_, emitter.rotation());
+				particleImpl._Position = _math.addv3_(particleImpl._Position, emitter.position());
 				particleImpl._Angle = 0F;
-				float rnd_a = 5F + _math.rand_() * (30F - 5F);
-				particleImpl._Size = rnd_a;
-				float rnd_b = 0F + _math.rand_() * (1F - 0F);
+				float rnd_ = 5F + _math.rand_() * (30F - 5F);
+				particleImpl._Size = rnd_;
+				float rnd_a = 0F + _math.rand_() * (1F - 0F);
 				_math.vec3 _plot_out;
-				float _plot_in0=(rnd_b<0F?0F:(rnd_b>0.9F?0.9F:rnd_b));
+				float _plot_in0=(rnd_a<0F?0F:(rnd_a>0.9F?0.9F:rnd_a));
 				_math.PathRes _plot_srch0 = _plot_in0<0.6?_plot_in0<0.3?_math.pathRes(0,(_plot_in0-0F)*3.33333F):_math.pathRes(1,(_plot_in0-0.3F)*3.33333F):_math.pathRes(2,(_plot_in0-0.6F)*3.33333F);
 				_math.funcLerp(out _plot_out.x, this._plot[0][_plot_srch0.s],_plot_srch0.i);
-				float _plot_in1=(rnd_b<0F?0F:(rnd_b>0.6F?0.6F:rnd_b));
+				float _plot_in1=(rnd_a<0F?0F:(rnd_a>0.6F?0.6F:rnd_a));
 				_math.PathRes _plot_srch1 = _plot_in1<0.3?_math.pathRes(0,(_plot_in1-0F)*3.33333F):_math.pathRes(1,(_plot_in1-0.3F)*3.33333F);
 				_math.funcLerp(out _plot_out.y, this._plot[1][_plot_srch1.s],_plot_srch1.i);
-				float _plot_in2=(rnd_b<0F?0F:(rnd_b>0.9F?0.9F:rnd_b));
+				float _plot_in2=(rnd_a<0F?0F:(rnd_a>0.9F?0.9F:rnd_a));
 				_math.PathRes _plot_srch2 = _plot_in2<0.6?_plot_in2<0.3?_math.pathRes(0,(_plot_in2-0F)*3.33333F):_math.pathRes(1,(_plot_in2-0.3F)*3.33333F):_math.pathRes(2,(_plot_in2-0.6F)*3.33333F);
 				_math.funcLerp(out _plot_out.z, this._plot[2][_plot_srch2.s],_plot_srch2.i);
 				particleImpl._Color = _plot_out;
+				float rnd_b = 0F + _math.rand_() * (800F - 0F);
+				_math.vec3 randvec_ = _math.randv3_(rnd_b);
+				particleImpl._Velocity = _math.applyv3quat_(randvec_, emitter.rotation());
+				particleImpl._Velocity = _math.addv3_(particleImpl._Velocity, emitter.velocity());
 				particle.position_ = particleImpl._Position;
 			}
 
@@ -154,26 +155,27 @@ namespace Neutrino
 				GeneratorImpl generatorImpl = (GeneratorImpl)generator.impl();
 				particleImpl._lifetime = 0F;
 				_math.vec3 value_ = _math.vec3_(0F, 0F, 0F);
-				particleImpl._Position = _math.addv3_(value_, emitter.position());
-				float rnd_ = 0F + _math.rand_() * (800F - 0F);
-				_math.vec3 randvec_ = _math.randv3_(rnd_);
-				_math.vec3 expr_ = _math.addv3_(emitter.velocity(), randvec_);
-				particleImpl._Velocity = expr_;
+				particleImpl._Position = _math.applyv3quat_(value_, emitter.rotation());
+				particleImpl._Position = _math.addv3_(particleImpl._Position, emitter.position());
 				particleImpl._Angle = 0F;
-				float rnd_a = 5F + _math.rand_() * (30F - 5F);
-				particleImpl._Size = rnd_a;
-				float rnd_b = 0F + _math.rand_() * (1F - 0F);
+				float rnd_ = 5F + _math.rand_() * (30F - 5F);
+				particleImpl._Size = rnd_;
+				float rnd_a = 0F + _math.rand_() * (1F - 0F);
 				_math.vec3 _plot_out;
-				float _plot_in0=(rnd_b<0F?0F:(rnd_b>0.9F?0.9F:rnd_b));
+				float _plot_in0=(rnd_a<0F?0F:(rnd_a>0.9F?0.9F:rnd_a));
 				_math.PathRes _plot_srch0 = _plot_in0<0.6?_plot_in0<0.3?_math.pathRes(0,(_plot_in0-0F)*3.33333F):_math.pathRes(1,(_plot_in0-0.3F)*3.33333F):_math.pathRes(2,(_plot_in0-0.6F)*3.33333F);
 				_math.funcLerp(out _plot_out.x, this._plot[0][_plot_srch0.s],_plot_srch0.i);
-				float _plot_in1=(rnd_b<0F?0F:(rnd_b>0.6F?0.6F:rnd_b));
+				float _plot_in1=(rnd_a<0F?0F:(rnd_a>0.6F?0.6F:rnd_a));
 				_math.PathRes _plot_srch1 = _plot_in1<0.3?_math.pathRes(0,(_plot_in1-0F)*3.33333F):_math.pathRes(1,(_plot_in1-0.3F)*3.33333F);
 				_math.funcLerp(out _plot_out.y, this._plot[1][_plot_srch1.s],_plot_srch1.i);
-				float _plot_in2=(rnd_b<0F?0F:(rnd_b>0.9F?0.9F:rnd_b));
+				float _plot_in2=(rnd_a<0F?0F:(rnd_a>0.9F?0.9F:rnd_a));
 				_math.PathRes _plot_srch2 = _plot_in2<0.6?_plot_in2<0.3?_math.pathRes(0,(_plot_in2-0F)*3.33333F):_math.pathRes(1,(_plot_in2-0.3F)*3.33333F):_math.pathRes(2,(_plot_in2-0.6F)*3.33333F);
 				_math.funcLerp(out _plot_out.z, this._plot[2][_plot_srch2.s],_plot_srch2.i);
 				particleImpl._Color = _plot_out;
+				float rnd_b = 0F + _math.rand_() * (800F - 0F);
+				_math.vec3 randvec_ = _math.randv3_(rnd_b);
+				particleImpl._Velocity = _math.applyv3quat_(randvec_, emitter.rotation());
+				particleImpl._Velocity = _math.addv3_(particleImpl._Velocity, emitter.velocity());
 				particle.position_ = particleImpl._Position;
 			}
 
