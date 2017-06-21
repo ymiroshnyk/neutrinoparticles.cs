@@ -8,6 +8,9 @@ TO DO
 * Add interface for changing properties of emitters.
 * Add correct scaling of effects.
 
+## Video tutorials
+Check out [video tutorials](https://www.youtube.com/playlist?list=PLfUh_hY5m9kmOZfaxHbSv_dXmP1W6oXkL) for NeutrinoParticles on Unity.
+
 ## Directory structure
 
 * **/Assets/Plugins** - contains Neutrino.dll - the NeutrinoParticles library for C#. This is cross-platform system-independent library which can simulate effects, create generic geometry and give rendering instructions for that geometry.
