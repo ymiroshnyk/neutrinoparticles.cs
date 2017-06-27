@@ -1,4 +1,4 @@
-// c4cbd69a-590a-4496-9d79-5aa391fc6fbd
+// 9fe69019-94fd-404c-819e-2ed42f40fdb5
 
 #pragma warning disable 219
 
@@ -14,9 +14,9 @@ namespace Neutrino
 			{
 				public float _lifetime;
 				public _math.vec3 _Position;
-				public _math.vec3 _Velocity;
 				public float _Angle;
 				public float _Tex__index;
+				public _math.vec3 _Velocity;
 				public override _math.vec2 origin() { return _math.vec2_(0.5F,0.5F); }
 				public override float angle() { return _Angle; }
 				public override _math.quat rotation() { return _math.quat_(1, 0, 0, 0); }
@@ -44,7 +44,7 @@ namespace Neutrino
 
 			public class GeneratorImpl : GeneratorPeriodic.Impl
 			{
-				public float salvo() { return 1F; }
+				public float burst() { return 1F; }
 				public float? fixedTime() { return null; }
 				public float? fixedShots() { return null; }
 				public float startPhase() { return 1F; }
@@ -68,7 +68,7 @@ namespace Neutrino
 
 			float [][][] _plotb = 
 			{
-				new float[][] { new float[]{ 0F,1F,1F }, new float[]{ 1F,0.857426F,0.748759F,0.657986F,0.57883F,0.50806F,0.443753F,0.384662F,0.329923F,0.278916F,0.23118F,0.186365F,0.144202F,0.104484F,0.0670548F,0.0317972F,0.0317972F }}
+				new float[][] { new float[]{ 0F,1F,1F }, new float[]{ 1F,0.857426F,0.748759F,0.657986F,0.57883F,0.508059F,0.443753F,0.384662F,0.329923F,0.278916F,0.23118F,0.186365F,0.144202F,0.104484F,0.0670548F,0.0317972F,0.0317972F }}
 			};
 
 			public class ConstructorImpl : ConstructorQuads.Impl
@@ -125,17 +125,18 @@ namespace Neutrino
 				GeneratorImpl generatorImpl = (GeneratorImpl)generator.impl();
 				particleImpl._lifetime = 0F;
 				_math.vec3 value_ = _math.vec3_(0F, 0F, 0F);
-				particleImpl._Position = _math.addv3_(value_, emitter.position());
-				_math.vec3 randvec_ = _math.randv3_(100F);
-				_math.vec3 expr_ = _math.addv3_(emitter.velocity(), randvec_);
-				particleImpl._Velocity = expr_;
+				particleImpl._Position = _math.applyv3quat_(value_, emitter.rotation());
+				particleImpl._Position = _math.addv3_(particleImpl._Position, emitter.position());
 				particleImpl._Angle = 0F;
 				float rnd_ = 0F + _math.rand_() * (5F - 0F);
 				particleImpl._Tex__index = rnd_;
+				_math.vec3 randvec_ = _math.randv3_(100F);
+				particleImpl._Velocity = _math.applyv3quat_(randvec_, emitter.rotation());
+				particleImpl._Velocity = _math.addv3_(particleImpl._Velocity, emitter.velocity());
 				particle.position_ = particleImpl._Position;
 			}
 
-			public void initSalvoParticle(Emitter emitter, Particle particle)
+			public void initBurstParticle(Emitter emitter, Particle particle)
 			{
 				ParticleImpl particleImpl = (ParticleImpl)particle;
 				float dt = 0;
@@ -145,13 +146,14 @@ namespace Neutrino
 				GeneratorImpl generatorImpl = (GeneratorImpl)generator.impl();
 				particleImpl._lifetime = 0F;
 				_math.vec3 value_ = _math.vec3_(0F, 0F, 0F);
-				particleImpl._Position = _math.addv3_(value_, emitter.position());
-				_math.vec3 randvec_ = _math.randv3_(100F);
-				_math.vec3 expr_ = _math.addv3_(emitter.velocity(), randvec_);
-				particleImpl._Velocity = expr_;
+				particleImpl._Position = _math.applyv3quat_(value_, emitter.rotation());
+				particleImpl._Position = _math.addv3_(particleImpl._Position, emitter.position());
 				particleImpl._Angle = 0F;
 				float rnd_ = 0F + _math.rand_() * (5F - 0F);
 				particleImpl._Tex__index = rnd_;
+				_math.vec3 randvec_ = _math.randv3_(100F);
+				particleImpl._Velocity = _math.applyv3quat_(randvec_, emitter.rotation());
+				particleImpl._Velocity = _math.addv3_(particleImpl._Velocity, emitter.velocity());
 				particle.position_ = particleImpl._Position;
 			}
 
@@ -193,7 +195,6 @@ namespace Neutrino
 				_math.vec3 fmove_p = _math.mulv3scalar_(fmove_fs, dt);
 				_math.addv3(out fmove_p, fmove_p, particleImpl._Position);
 				particleImpl._Position = fmove_p;
-				particleImpl._Velocity = fmove_fs;
 				float value_a = 1.5F;
 				float expr_ = (particleImpl._lifetime / value_a);
 				float _plot_out;
@@ -202,6 +203,7 @@ namespace Neutrino
 				_math.funcLerp(out _plot_out, this._plot[0][_plot_srch0.s],_plot_srch0.i);
 				float move_ = particleImpl._Angle + _plot_out * dt;
 				particleImpl._Angle = move_;
+				particleImpl._Velocity = fmove_fs;
 				particle.position_ = particleImpl._Position;
 				if (particleImpl._lifetime > value_a) 
 				{
@@ -228,9 +230,9 @@ namespace Neutrino
 			{
 				public float _lifetime;
 				public _math.vec3 _Position;
-				public _math.vec3 _Velocity;
 				public float _Angle;
 				public float _Max_Life;
+				public _math.vec3 _Velocity;
 				public override _math.vec2 origin() { return _math.vec2_(0.5F,0.5F); }
 				public override float angle() { return _Angle; }
 				public override _math.quat rotation() { return _math.quat_(1, 0, 0, 0); }
@@ -258,7 +260,7 @@ namespace Neutrino
 
 			public class GeneratorImpl : GeneratorPeriodic.Impl
 			{
-				public float salvo() { return 1F; }
+				public float burst() { return 1F; }
 				public float? fixedTime() { return null; }
 				public float? fixedShots() { return null; }
 				public float startPhase() { return 1F; }
@@ -344,22 +346,23 @@ namespace Neutrino
 				_math.vec2 _path_pos;
 				_math.pathLerp1(out _path_pos, this._path[_path_srch.s], _path_srch.i);
 				_math.vec3 conv3d_ = _math.vec3_(_path_pos.x, _path_pos.y, 0F);
-				particleImpl._Position = _math.addv3_(conv3d_, emitter.position());
-				float rnd_a = 0F + _math.rand_() * (1F - 0F);
-				float _patha_in = _math.clamp_(rnd_a, 0, 1);
+				particleImpl._Position = _math.applyv3quat_(conv3d_, emitter.rotation());
+				particleImpl._Position = _math.addv3_(particleImpl._Position, emitter.position());
+				particleImpl._Angle = 0F;
+				float rnd_a = 0F + _math.rand_() * (2F - 0F);
+				particleImpl._Max_Life = rnd_a;
+				float rnd_b = 0F + _math.rand_() * (1F - 0F);
+				float _patha_in = _math.clamp_(rnd_b, 0, 1);
 				_math.PathRes _patha_srch = _math.pathRes(0,(_patha_in-0F)*1F);
 				_math.vec2 _patha_pos;
 				_math.pathLerp1(out _patha_pos, this._patha[_patha_srch.s], _patha_srch.i);
 				_math.vec3 conv3d_a = _math.vec3_(_patha_pos.x, _patha_pos.y, 0F);
-				_math.vec3 expr_ = _math.addv3_(emitter.velocity(), conv3d_a);
-				particleImpl._Velocity = expr_;
-				particleImpl._Angle = 0F;
-				float rnd_b = 0F + _math.rand_() * (2F - 0F);
-				particleImpl._Max_Life = rnd_b;
+				particleImpl._Velocity = _math.applyv3quat_(conv3d_a, emitter.rotation());
+				particleImpl._Velocity = _math.addv3_(particleImpl._Velocity, emitter.velocity());
 				particle.position_ = particleImpl._Position;
 			}
 
-			public void initSalvoParticle(Emitter emitter, Particle particle)
+			public void initBurstParticle(Emitter emitter, Particle particle)
 			{
 				ParticleImpl particleImpl = (ParticleImpl)particle;
 				float dt = 0;
@@ -374,18 +377,19 @@ namespace Neutrino
 				_math.vec2 _path_pos;
 				_math.pathLerp1(out _path_pos, this._path[_path_srch.s], _path_srch.i);
 				_math.vec3 conv3d_ = _math.vec3_(_path_pos.x, _path_pos.y, 0F);
-				particleImpl._Position = _math.addv3_(conv3d_, emitter.position());
-				float rnd_a = 0F + _math.rand_() * (1F - 0F);
-				float _patha_in = _math.clamp_(rnd_a, 0, 1);
+				particleImpl._Position = _math.applyv3quat_(conv3d_, emitter.rotation());
+				particleImpl._Position = _math.addv3_(particleImpl._Position, emitter.position());
+				particleImpl._Angle = 0F;
+				float rnd_a = 0F + _math.rand_() * (2F - 0F);
+				particleImpl._Max_Life = rnd_a;
+				float rnd_b = 0F + _math.rand_() * (1F - 0F);
+				float _patha_in = _math.clamp_(rnd_b, 0, 1);
 				_math.PathRes _patha_srch = _math.pathRes(0,(_patha_in-0F)*1F);
 				_math.vec2 _patha_pos;
 				_math.pathLerp1(out _patha_pos, this._patha[_patha_srch.s], _patha_srch.i);
 				_math.vec3 conv3d_a = _math.vec3_(_patha_pos.x, _patha_pos.y, 0F);
-				_math.vec3 expr_ = _math.addv3_(emitter.velocity(), conv3d_a);
-				particleImpl._Velocity = expr_;
-				particleImpl._Angle = 0F;
-				float rnd_b = 0F + _math.rand_() * (2F - 0F);
-				particleImpl._Max_Life = rnd_b;
+				particleImpl._Velocity = _math.applyv3quat_(conv3d_a, emitter.rotation());
+				particleImpl._Velocity = _math.addv3_(particleImpl._Velocity, emitter.velocity());
 				particle.position_ = particleImpl._Position;
 			}
 

@@ -43,7 +43,7 @@ namespace Neutrino
 
 			public class GeneratorImpl : GeneratorPeriodic.Impl
 			{
-				public float salvo() { return 1F; }
+				public float burst() { return 1F; }
 				public float? fixedTime() { return null; }
 				public float? fixedShots() { return null; }
 				public float startPhase() { return 1F; }
@@ -145,7 +145,7 @@ namespace Neutrino
 				particle.position_ = particleImpl._Position;
 			}
 
-			public void initSalvoParticle(Emitter emitter, Particle particle)
+			public void initBurstParticle(Emitter emitter, Particle particle)
 			{
 				ParticleImpl particleImpl = (ParticleImpl)particle;
 				float dt = 0;
