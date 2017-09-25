@@ -13,6 +13,9 @@ namespace NeutrinoGl
 		{
 			materials_ = new Materials();
 			texturesBasePath_ = texturesBasePath;
+
+			var noiseGenerator = new Neutrino.NoiseGenerator();
+			while (!noiseGenerator.step()) { }
 		}
 
 		public void shutdown()
