@@ -223,30 +223,19 @@ namespace Neutrino
 			}
 		}
 
-		string[] textures_ = new string[] { "bubble.png" };
-		public string[] textures() { return textures_; }
-
-		RenderMaterial[] materials_ = new RenderMaterial[] { RenderMaterial.Normal };
-		public RenderMaterial[] materials() { return materials_; }
-
-		RenderStyle[] renderStyles_ = new RenderStyle[] { new RenderStyle(0,new uint[] {0}) };
-		public RenderStyle[] renderStyles() { return renderStyles_; }
-
-		public float frameTime() { return 0.0333333F; }
-
-		public float presimulateTime() { return 0F; }
-
-		public uint maxNumRenderCalls() { return 10000; }
-
-		public uint maxNumParticles() { return 10000; }
-
-		EmitterModel[] emitterModels_ = new EmitterModel[]{ new Emitter_DefaultEmitter() };
-		public EmitterModel[] emitterModels() { return emitterModels_; }
-
-		uint[] activeEmitterModels_ = new uint[] { 0 };
-		public uint[] activeEmitterModels() { return activeEmitterModels_; }
-
-		public RandomGenerator createRandomGenerator() { return _math.rand_; }
+		public Effect_A_lot_of_particles()
+		{
+			textures_ = new string[] { "bubble.png" };
+			materials_ = new RenderMaterial[] { RenderMaterial.Normal };
+			renderStyles_ = new RenderStyle[] { new RenderStyle(0,new uint[] {0}) };
+			frameTime_ = 0.0333333F;
+			presimulateTime_ = 0F;
+			maxNumRenderCalls_ = 10000;
+			maxNumParticles_ = 10000;
+			emitterModels_ = new EmitterModel[]{ new Emitter_DefaultEmitter() };
+			activeEmitterModels_ = new uint[] { 0 };
+			randomGeneratorCreator_ = () => { return _math.rand_; };
+		}
 	}
 }
 

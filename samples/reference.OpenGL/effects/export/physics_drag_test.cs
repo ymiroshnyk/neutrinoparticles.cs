@@ -1512,30 +1512,19 @@ namespace Neutrino
 			}
 		}
 
-		string[] textures_ = new string[] { "star_glow_white.png" };
-		public string[] textures() { return textures_; }
-
-		RenderMaterial[] materials_ = new RenderMaterial[] { RenderMaterial.Normal };
-		public RenderMaterial[] materials() { return materials_; }
-
-		RenderStyle[] renderStyles_ = new RenderStyle[] { new RenderStyle(0,new uint[] {0}) };
-		public RenderStyle[] renderStyles() { return renderStyles_; }
-
-		public float frameTime() { return 0.0333333F; }
-
-		public float presimulateTime() { return 0F; }
-
-		public uint maxNumRenderCalls() { return 900; }
-
-		public uint maxNumParticles() { return 900; }
-
-		EmitterModel[] emitterModels_ = new EmitterModel[]{ new Emitter_drag0(), new Emitter_drag0_wind(), new Emitter_drag1(), new Emitter_drag2(), new Emitter_drag3(), new Emitter_drag4(), new Emitter_drag10(), new Emitter_drag20(), new Emitter_drag20_wind() };
-		public EmitterModel[] emitterModels() { return emitterModels_; }
-
-		uint[] activeEmitterModels_ = new uint[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
-		public uint[] activeEmitterModels() { return activeEmitterModels_; }
-
-		public RandomGenerator createRandomGenerator() { return _math.rand_; }
+		public Effect_physics_drag_test()
+		{
+			textures_ = new string[] { "star_glow_white.png" };
+			materials_ = new RenderMaterial[] { RenderMaterial.Normal };
+			renderStyles_ = new RenderStyle[] { new RenderStyle(0,new uint[] {0}) };
+			frameTime_ = 0.0333333F;
+			presimulateTime_ = 0F;
+			maxNumRenderCalls_ = 900;
+			maxNumParticles_ = 900;
+			emitterModels_ = new EmitterModel[]{ new Emitter_drag0(), new Emitter_drag0_wind(), new Emitter_drag1(), new Emitter_drag2(), new Emitter_drag3(), new Emitter_drag4(), new Emitter_drag10(), new Emitter_drag20(), new Emitter_drag20_wind() };
+			activeEmitterModels_ = new uint[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+			randomGeneratorCreator_ = () => { return _math.rand_; };
+		}
 	}
 }
 
