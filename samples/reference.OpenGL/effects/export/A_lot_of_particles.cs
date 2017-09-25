@@ -30,16 +30,10 @@ namespace Neutrino
 
 			}
 
-			public Particle createParticle(Effect effect)
-			{
-				return new ParticleImpl();
-			}
 
 			public class EmitterData
 			{
 			}
-
-			public object createEmitterData() { return new EmitterData(); }
 
 			public class GeneratorImpl : GeneratorPeriodic.Impl
 			{
@@ -48,11 +42,6 @@ namespace Neutrino
 				public float? fixedShots() { return null; }
 				public float startPhase() { return 1F; }
 				public float rate() { return 5000F; }
-			}
-
-			public Generator createGenerator(Emitter emitter)
-			{
-				return new GeneratorPeriodic(emitter, new GeneratorImpl());
 			}
 
 			float [][][] _plot = 
@@ -76,42 +65,31 @@ namespace Neutrino
 				public ushort renderStyleIndex() { return 0; }
 			}
 
-			public Constructor createConstructor(Emitter emitter)
-			{
-				return new ConstructorQuads(emitter, new ConstructorImpl());
-			}
-
-			public void setPropertyValue(object emitterData, string name, float value)
+			public override void setPropertyValue(object emitterData, string name, float value)
 			{
 			}
 
-			public void setPropertyValue(object emitterData, string name, _math.vec2 value)
+			public override void setPropertyValue(object emitterData, string name, _math.vec2 value)
 			{
 			}
 
-			public void setPropertyValue(object emitterData, string name, _math.vec3 value)
+			public override void setPropertyValue(object emitterData, string name, _math.vec3 value)
 			{
 			}
 
-			public void setPropertyValue(object emitterData, string name, _math.quat value)
+			public override void setPropertyValue(object emitterData, string name, _math.quat value)
 			{
 			}
 
-			string name_ = "DefaultEmitter";
-			public string name() { return name_; }
 
-			public uint maxNumParticles() { return 10000; }
-
-			public Emitter.Sorting sorting() { return Emitter.Sorting.OldToYoung; }
-
-			public void updateEmitter(Emitter emitter)
+			public override void updateEmitter(Emitter emitter)
 			{
 				EmitterData emitterData = (EmitterData)emitter.data();
 				GeneratorPeriodic generator = (GeneratorPeriodic)emitter.generator(); 
 				GeneratorImpl generatorImpl = (GeneratorImpl)generator.impl();
 			}
 
-			public void initParticle(Emitter emitter, Particle particle)
+			public override void initParticle(Emitter emitter, Particle particle)
 			{
 				ParticleImpl particleImpl = (ParticleImpl)particle;
 				float dt = 0;
@@ -145,7 +123,7 @@ namespace Neutrino
 				particle.position_ = particleImpl._Position;
 			}
 
-			public void initBurstParticle(Emitter emitter, Particle particle)
+			public override void initBurstParticle(Emitter emitter, Particle particle)
 			{
 				ParticleImpl particleImpl = (ParticleImpl)particle;
 				float dt = 0;
@@ -179,7 +157,7 @@ namespace Neutrino
 				particle.position_ = particleImpl._Position;
 			}
 
-			public void updateParticle(Emitter emitter, Particle particle, float dt)
+			public override void updateParticle(Emitter emitter, Particle particle, float dt)
 			{
 				ParticleImpl particleImpl = (ParticleImpl)particle;
 				EmitterData emitterData = (EmitterData)emitter.data();
@@ -232,6 +210,16 @@ namespace Neutrino
 				_math.PathRes _plota_srch0 = _plota_in0<0.956383?_math.pathRes(0,(_plota_in0-0F)*1.04561F):_math.pathRes(1,(_plota_in0-0.956383F)*22.9268F);
 				_math.funcLerp(out _plota_out, this._plota[0][_plota_srch0.s],_plota_srch0.i);
 				particleImpl.alpha_ = _plota_out;
+			}
+			public Emitter_DefaultEmitter()
+			{
+				generatorCreator_ = (Emitter emitter) => { return new GeneratorPeriodic(emitter, new GeneratorImpl()); };
+				constructorCreator_ = (Emitter emitter) => { return new ConstructorQuads(emitter, new ConstructorImpl()); };
+				name_ = "DefaultEmitter";
+				maxNumParticles_ = 10000;
+				sorting_ = Emitter.Sorting.OldToYoung;
+				particleCreator_ = (Effect effect) => { return new ParticleImpl(); };
+				emitterDataCreator_ = () => { return new EmitterData(); };
 			}
 		}
 
