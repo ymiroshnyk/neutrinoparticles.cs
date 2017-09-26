@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="effects\export\A_lot_of_particles.cs" />
+    <Compile Include="effects\export\noise_test.cs" />
     <Compile Include="effects\export\physics_drag_test.cs" />
     <Compile Include="effects\export\random_test.cs" />
     <Compile Include="neutrinogl\neutrinogl_context.cs" />

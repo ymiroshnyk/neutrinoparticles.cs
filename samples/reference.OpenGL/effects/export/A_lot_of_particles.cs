@@ -27,7 +27,6 @@ namespace Neutrino
 				public override float alpha() { return alpha_; }
 				public override float gridIndex() { return 0; }
 				public override AttachedEmitter[] attachedEmitters() { return null; }
-
 			}
 
 

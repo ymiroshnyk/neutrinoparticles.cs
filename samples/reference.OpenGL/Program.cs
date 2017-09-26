@@ -33,7 +33,7 @@ namespace OpenGLTutorial6
 			Matrix4 modelMatrix = CreateModelMatrix(time_);
 
 			context_ = new NeutrinoGl.Context("..\\..\\effects\\textures\\");
-			effectModel_ = new NeutrinoGl.EffectModel(context_, new Neutrino.Effect_random_test());
+			effectModel_ = new NeutrinoGl.EffectModel(context_, new Neutrino.Effect_A_lot_of_particles());
 			effect_ = new NeutrinoGl.Effect(effectModel_, Neutrino._math.vec3_(modelMatrix[3].x, modelMatrix[3].y, modelMatrix[3].z), null);
 
 			// load a crate texture
