@@ -35,7 +35,7 @@ namespace NeutrinoGl
 			renderBuffer_.shutdown();
 		}
 
-		Neutrino.Effect neutrinoEffect()
+		public Neutrino.Effect neutrinoEffect()
 		{
 			return neutrinoEffect_;
 		}

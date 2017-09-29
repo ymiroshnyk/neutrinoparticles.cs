@@ -5,13 +5,14 @@ using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System;
 
 namespace Neutrino.Unity3D
 {
 	[RequireComponent(typeof(MeshRenderer))]
 	[RequireComponent(typeof(MeshFilter))]
 	[ExecuteInEditMode]
-	public class NeutrinoRenderer : MonoBehaviour
+	public abstract class NeutrinoRenderer : MonoBehaviour, ISerializationCallbackReceiver
 	{
 		#region Fields
 		public bool simulateInWorldSpace = true;
@@ -31,6 +32,11 @@ namespace Neutrino.Unity3D
 		#endregion
 
 		#region Methods
+
+		public Neutrino.Effect neutrinoEffect()
+		{
+			return neutrinoEffect_;
+		}
 
 		void Awake()
 		{
@@ -155,12 +161,7 @@ namespace Neutrino.Unity3D
 		{
 			//Debug.Log("initNeutrino()");
 
-			Component[] components = GetComponents<MonoBehaviour>();
-			foreach (Component c in components)
-			{
-				if (c is Neutrino.EffectModel)
-					neutrinoEffectModel_ = c as Neutrino.EffectModel;
-			}
+			neutrinoEffectModel_ = createModel();
 
 			Mesh mesh = new Mesh();
 			gameObject.GetComponent<MeshFilter>().mesh = mesh;
@@ -175,6 +176,8 @@ namespace Neutrino.Unity3D
 				simulateInWorldSpace ?
 					Neutrino._math.quat_(transform.rotation.w, transform.rotation.x, transform.rotation.y, transform.rotation.z) :
 					Neutrino._math.quat_(1, 0, 0, 0));
+
+			deserializeToEffect();
 
 			// preparing materials
 			{
@@ -238,5 +241,143 @@ namespace Neutrino.Unity3D
 			EditorApplication.update += Update;
 #endif
 		}
+
+		[Serializable]
+		private class SerializableProperty
+		{
+			public string name_;
+			public List<float> value_ = new List<float>();
+		}
+
+		[Serializable]
+		private class SerializableEmitter
+		{
+			public string name_;
+			public List<SerializableProperty> properties_ = new List<SerializableProperty>();
+		}
+
+		[Serializable]
+		private class SerializableEffect
+		{
+			public List<SerializableEmitter> emitters_ = new List<SerializableEmitter>();
+		}
+
+		[HideInInspector]
+		[SerializeField]
+		private SerializableEffect serializableEffect_ = new SerializableEffect();
+
+		public void OnBeforeSerialize()
+		{
+			Neutrino.Effect effect = neutrinoEffect_;
+			if (effect == null)
+				return;
+
+			serializableEffect_.emitters_.Clear();
+
+			for (int emitterIndex = 0; emitterIndex < effect.numEmitters(); ++emitterIndex)
+			{
+				Neutrino.Emitter emitter = effect.emitter(emitterIndex);
+
+				var serialEmitter = new SerializableEmitter();
+				serialEmitter.name_ = emitter.model().name();
+				serializableEffect_.emitters_.Add(serialEmitter);
+
+				for (int propIndex = 0; propIndex < emitter.model().numProperties(); ++propIndex)
+				{
+					var serialProp = new SerializableProperty();
+					serialProp.name_ = emitter.model().propertyName(propIndex);
+					serialEmitter.properties_.Add(serialProp);
+
+					switch (emitter.model().propertyType(propIndex))
+					{
+						case Neutrino.EmitterModel.PropertyType.FLOAT:
+							{
+								float value = (float)emitter.propertyValue(propIndex);
+								serialProp.value_.Add(value);
+							}
+							break;
+						case Neutrino.EmitterModel.PropertyType.VEC2:
+							{
+								_math.vec2 value = (_math.vec2)emitter.propertyValue(propIndex);
+								serialProp.value_.Add(value.x);
+								serialProp.value_.Add(value.y);
+							}
+							break;
+						case Neutrino.EmitterModel.PropertyType.VEC3:
+							{
+								_math.vec3 value = (_math.vec3)emitter.propertyValue(propIndex);
+								serialProp.value_.Add(value.x);
+								serialProp.value_.Add(value.y);
+								serialProp.value_.Add(value.z);
+							}
+							break;
+						case Neutrino.EmitterModel.PropertyType.QUAT:
+							// none until inspector is ready for quaternions
+							break;
+					}
+				}
+			}
+		}
+
+		public void OnAfterDeserialize()
+		{
+			if (neutrinoEffect_ != null)
+				deserializeToEffect();
+		}
+
+		private void deserializeToEffect()
+		{
+			if (serializableEffect_ == null)
+				return;
+
+			Neutrino.Effect effect = neutrinoEffect_;
+
+			for (int emitterIndex = 0; emitterIndex < serializableEffect_.emitters_.Count; ++emitterIndex)
+			{
+				var serialEmitter = serializableEffect_.emitters_[emitterIndex];
+
+				Neutrino.Emitter emitter = effect.emitter(serialEmitter.name_);
+				if (emitter == null)
+					continue;
+
+				for (int propIndex = 0; propIndex < serialEmitter.properties_.Count; ++propIndex)
+				{
+					var serialProp = serialEmitter.properties_[propIndex];
+
+					var propType = emitter.model().propertyType(serialProp.name_);
+					if (propType == null)
+						continue;
+
+					switch (propType.Value)
+					{
+						case Neutrino.EmitterModel.PropertyType.FLOAT:
+							{
+								if (serialProp.value_.Count == 1)
+									emitter.setPropertyValue(serialProp.name_, serialProp.value_[0]);
+							}
+							break;
+						case Neutrino.EmitterModel.PropertyType.VEC2:
+							{
+								if (serialProp.value_.Count == 2)
+									emitter.setPropertyValue(serialProp.name_, 
+										_math.vec2_(serialProp.value_[0], serialProp.value_[1]));
+							}
+							break;
+						case Neutrino.EmitterModel.PropertyType.VEC3:
+							{
+								if (serialProp.value_.Count == 3)
+									emitter.setPropertyValue(serialProp.name_,
+										_math.vec3_(serialProp.value_[0], serialProp.value_[1], serialProp.value_[2]));
+							}
+							break;
+						case Neutrino.EmitterModel.PropertyType.QUAT:
+							// none until inspector is ready for quaternions
+							break;
+					}
+				}
+			}
+		}
+
+		public abstract EffectModel createModel();
 	}
 }
