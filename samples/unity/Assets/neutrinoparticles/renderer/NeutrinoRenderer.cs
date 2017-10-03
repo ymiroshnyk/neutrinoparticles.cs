@@ -22,9 +22,6 @@ namespace Neutrino.Unity3D
 		private Neutrino.Effect neutrinoEffect_;
 
 		private Material[] materials_;
-		private Shader shaderNormal_;
-		private Shader shaderAdd_;
-		private Shader shaderMultiply_;
 
 		NeutrinoRenderBuffer renderBuffer_;
 
@@ -41,10 +38,6 @@ namespace Neutrino.Unity3D
 		void Awake()
 		{
 			//Debug.Log("Awake()");
-
-			shaderNormal_ = Shader.Find("Neutrino/Normal");
-			shaderAdd_ = Shader.Find("Neutrino/Add");
-			shaderMultiply_ = Shader.Find("Neutrino/Multiply");
 		}
 
 		void OnDestroy()
@@ -193,15 +186,15 @@ namespace Neutrino.Unity3D
 					switch (neutrinoEffectModel_.materials()[renderStyles[i].material_])
 					{
 						default:
-							material = new Material(shaderNormal_);
+							material = new Material(NeutrinoContext.instance.shaderNormal());
 							break;
 
 						case Neutrino.RenderMaterial.Add:
-							material = new Material(shaderAdd_);
+							material = new Material(NeutrinoContext.instance.shaderAdd());
 							break;
 
 						case Neutrino.RenderMaterial.Multiply:
-							material = new Material(shaderMultiply_);
+							material = new Material(NeutrinoContext.instance.shaderMultiply());
 							break;
 					}
 
