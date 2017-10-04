@@ -37,9 +37,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Neutrino">
-      <HintPath>libs\Neutrino.dll</HintPath>
-    </Reference>
     <Reference Include="OpenGL">
       <HintPath>libs\OpenGL.dll</HintPath>
     </Reference>
@@ -61,6 +58,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Neutrino\Neutrino.csproj">
+      <Project>{a8a4c998-8498-4fad-891a-d972144e84b1}</Project>
+      <Name>Neutrino</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

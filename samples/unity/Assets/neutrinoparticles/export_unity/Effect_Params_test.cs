@@ -1,4 +1,4 @@
-// 799806e0-365e-466e-9ecd-8d841b3d753a
+// 7c20261d-f5ef-45c9-94fb-882a80e3f1c9
 
 #pragma warning disable 219
 
@@ -37,6 +37,7 @@ namespace Neutrino
 				public class EmitterData
 				{
 					public _math.vec3 _Color = _math.vec3_(1F,1F,1F);
+					public float _Turbulence = 200;
 				}
 
 				public class GeneratorImpl : GeneratorPeriodic.Impl
@@ -107,10 +108,22 @@ namespace Neutrino
 					GeneratorPeriodic generator = (GeneratorPeriodic)emitter.generator(); 
 					GeneratorImpl generatorImpl = (GeneratorImpl)generator.impl();
 					particleImpl._lifetime += dt;
-					_math.vec3 move_ = _math.addv3_(particleImpl._Position, _math.mulv3scalar_(particleImpl._Velocity, dt));
-					particleImpl._Position = move_;
+					_math.vec3 noise_a = _math.mulv3scalar_(_math.vec3_(100F,50F,30F), emitter.effect().time());
+					_math.addv3(out noise_a, noise_a, particleImpl._Position);
+					_math.vec3 noise_i = _math.mulv3scalar_(noise_a, 1.0F / 1000F); 
+					_math.vec3 noise = _math.noisePixelLinear3_(noise_i);
+					_math.mulv3(out noise, noise, _math.vec3_(0.0078125F,0.0078125F,0.0078125F));
+					_math.addv3(out noise, noise, _math.vec3_(-1F,-1F,-1F));
+					_math.mulv3scalar(out noise, noise, emitterData._Turbulence);
+					_math.vec3 fmove_fs = noise;
+					_math.vec3 fmove_vs = _math.vec3_(0F,0F,0F);
+					_math.vec3 fmove_v = _math.addv3_(particleImpl._Velocity, _math.mulv3scalar_(fmove_fs, dt));
+					_math.vec3 fmove_p = _math.mulv3scalar_(fmove_v, dt);
+					_math.addv3(out fmove_p, fmove_p, particleImpl._Position);
+					particleImpl._Position = fmove_p;
+					particleImpl._Velocity = fmove_v;
 					particle.position_ = particleImpl._Position;
-					float value_ = 2F;
+					float value_ = 3F;
 					if (particleImpl._lifetime > value_) 
 					{
 						particle.dead_ = true;
@@ -124,6 +137,9 @@ namespace Neutrino
 					addProperty("Color", PropertyType.VEC3, 
 						(object emitterData) => { return ((EmitterData)emitterData)._Color; }, 
 						(object emitterData, object value) => { _math.copyv3(out ((EmitterData)emitterData)._Color, (_math.vec3)value); });
+					addProperty("Turbulence", PropertyType.FLOAT, 
+						(object emitterData) => { return ((EmitterData)emitterData)._Turbulence; }, 
+						(object emitterData, object value) => { ((EmitterData)emitterData)._Turbulence = (float)value; });
 					generatorCreator_ = (Emitter emitter) => { return new GeneratorPeriodic(emitter, new GeneratorImpl()); };
 					constructorCreator_ = (Emitter emitter) => { return new ConstructorQuads(emitter, new ConstructorImpl()); };
 					name_ = "DefaultEmitter";
@@ -154,6 +170,8 @@ namespace Neutrino
 	{
 		if (modelInstance_ == null)
 			modelInstance_ = new Model();
+
+		NeutrinoContext.Instance.ensureNoiseIsGeneratedAndGenerateIfNecessary();
 
 		return modelInstance_;
 	}
