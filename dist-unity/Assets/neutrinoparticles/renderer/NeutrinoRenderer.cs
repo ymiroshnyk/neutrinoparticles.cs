@@ -186,15 +186,15 @@ namespace Neutrino.Unity3D
 					switch (neutrinoEffectModel_.materials()[renderStyles[i].material_])
 					{
 						default:
-							material = new Material(NeutrinoContext.instance.shaderNormal());
+							material = new Material(NeutrinoContext.Instance.shaderNormal());
 							break;
 
 						case Neutrino.RenderMaterial.Add:
-							material = new Material(NeutrinoContext.instance.shaderAdd());
+							material = new Material(NeutrinoContext.Instance.shaderAdd());
 							break;
 
 						case Neutrino.RenderMaterial.Multiply:
-							material = new Material(NeutrinoContext.instance.shaderMultiply());
+							material = new Material(NeutrinoContext.Instance.shaderMultiply());
 							break;
 					}
 
