@@ -109,6 +109,9 @@ namespace Neutrino.Unity3D
 		}
 
 		void OnWillRenderObject() {
+			if (neutrinoEffect_ == null || neutrinoEffectModel_ == null )
+				return;
+			
 			Transform camTrans = Camera.current.transform;
 
 			Neutrino._math.vec3 cameraRight =
@@ -150,6 +153,77 @@ namespace Neutrino.Unity3D
 			MeshRenderer mr = gameObject.GetComponent<MeshRenderer>();
 			mr.sharedMaterials = subMeshMaterials;
 		}
+
+		public void reset()
+		{
+			if (neutrinoEffect_ == null || neutrinoEffectModel_ == null)
+				return;
+
+			neutrinoEffect_.reset(null, null);
+		}
+
+		public bool paused()
+		{
+			if (neutrinoEffect_ == null || neutrinoEffectModel_ == null )
+				return false;
+
+			for (int emitterIndex = 0; emitterIndex < neutrinoEffect_.numEmitters (); ++emitterIndex) 
+			{
+				Neutrino.Emitter emitter = neutrinoEffect_.emitter (emitterIndex);
+				if (!emitter.paused ())
+					return false;
+			}
+
+			return true;
+		}
+
+		public void pause()
+		{
+			if (neutrinoEffect_ == null || neutrinoEffectModel_ == null )
+				return;
+
+			neutrinoEffect_.pause(null);
+		}
+
+		public void unpause()
+		{
+			if (neutrinoEffect_ == null || neutrinoEffectModel_ == null )
+				return;
+
+			neutrinoEffect_.unpause(null);
+		}
+
+		public bool generatorsPaused()
+		{
+			if (neutrinoEffect_ == null || neutrinoEffectModel_ == null )
+				return false;
+
+			for (int emitterIndex = 0; emitterIndex < neutrinoEffect_.numEmitters (); ++emitterIndex) 
+			{
+				Neutrino.Emitter emitter = neutrinoEffect_.emitter (emitterIndex);
+				if (!emitter.generatorsPaused())
+					return false;
+			}
+
+			return true;
+		}
+
+		public void pauseGenerators()
+		{
+			if (neutrinoEffect_ == null || neutrinoEffectModel_ == null )
+				return;
+
+			neutrinoEffect_.pauseGenerators(null);
+		}
+
+		public void unpauseGenerators()
+		{
+			if (neutrinoEffect_ == null || neutrinoEffectModel_ == null )
+				return;
+
+			neutrinoEffect_.unpauseGenerators(null);
+		}
+
 		#endregion
 
 		#region DesignTime
@@ -263,6 +337,8 @@ namespace Neutrino.Unity3D
 		private class SerializableEmitter
 		{
 			public string name_;
+			public bool paused_;
+			public bool generatorsPaused_;
 			public List<SerializableProperty> properties_ = new List<SerializableProperty>();
 		}
 
@@ -290,6 +366,8 @@ namespace Neutrino.Unity3D
 
 				var serialEmitter = new SerializableEmitter();
 				serialEmitter.name_ = emitter.model().name();
+				serialEmitter.paused_ = emitter.paused();
+				serialEmitter.generatorsPaused_ = emitter.generatorsPaused();
 				serializableEffect_.emitters_.Add(serialEmitter);
 
 				for (int propIndex = 0; propIndex < emitter.model().numProperties(); ++propIndex)
@@ -349,6 +427,22 @@ namespace Neutrino.Unity3D
 				Neutrino.Emitter emitter = effect.emitter(serialEmitter.name_);
 				if (emitter == null)
 					continue;
+
+				if (emitter.paused () != serialEmitter.paused_) 
+				{
+					if (serialEmitter.paused_)
+						emitter.pause();
+					else
+						emitter.unpause();
+				}
+
+				if (emitter.generatorsPaused () != serialEmitter.generatorsPaused_) 
+				{
+					if (serialEmitter.generatorsPaused_)
+						emitter.pauseGenerators();
+					else
+						emitter.unpauseGenerators();
+				}
 
 				for (int propIndex = 0; propIndex < serialEmitter.properties_.Count; ++propIndex)
 				{

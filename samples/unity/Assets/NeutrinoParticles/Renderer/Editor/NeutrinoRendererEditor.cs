@@ -15,6 +15,33 @@ namespace Neutrino.Unity3D
 			NeutrinoRenderer renderer = (NeutrinoRenderer)target;
 			Neutrino.Effect effect = renderer.neutrinoEffect();
 
+			GUILayout.BeginHorizontal ();
+
+			if (GUILayout.Button("Restart")) 
+			{
+				renderer.reset();
+			}
+
+			bool paused = renderer.paused();
+			if (GUILayout.Button(paused ? "Unpause" : "Pause")) 
+			{
+				if (paused)
+					renderer.unpause ();
+				else
+					renderer.pause ();
+			}
+
+			bool generatorsPaused = renderer.generatorsPaused ();
+			if (GUILayout.Button(generatorsPaused ? "Unpause generation" : "Pause generation")) 
+			{
+				if (generatorsPaused)
+					renderer.unpauseGenerators();
+				else
+					renderer.pauseGenerators();
+			}
+
+			GUILayout.EndHorizontal ();
+
 			for (int emitterIndex = 0; emitterIndex < effect.numEmitters(); ++emitterIndex)
 			{
 				Neutrino.Emitter emitter = effect.emitter(emitterIndex);
