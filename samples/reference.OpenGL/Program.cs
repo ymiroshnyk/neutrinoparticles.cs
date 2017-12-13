@@ -82,11 +82,36 @@ namespace OpenGLTutorial6
 			Glut.glutSwapBuffers();
 		}
 
+		private static bool paused = false;
+		private static bool pausedGenerators = false;
+
 		private static void OnKeyboard(byte key, int x, int y)
 		{
-			//if (key == 13)
+			if (key == 13)
 			{
 				effect_.neutrinoEffect().reset(null, null);
+			}
+			else if (key == ' ')
+			{
+				if (!paused)
+					effect_.neutrinoEffect().pause(null);
+				else
+				{
+					effect_.neutrinoEffect().unpause(null);
+				}
+
+				paused = !paused;
+			}
+			else if (key == 'G')
+			{
+				if (!pausedGenerators)
+					effect_.neutrinoEffect().pauseGenerators(null);
+				else
+				{
+					effect_.neutrinoEffect().unpauseGenerators(null);
+				}
+
+				pausedGenerators = !pausedGenerators;
 			}
 		}
 
