@@ -1,4 +1,4 @@
-// cdce5ab6-8918-4250-ba78-058697909776
+// 32399e03-a233-4f7b-8401-2bc771b5cfd5
 
 #pragma warning disable 219
 
@@ -6,7 +6,7 @@ using System;
 
 namespace Neutrino
 {
-	public class Effect_params_test : EffectModel
+	public class Effect_noise_test : EffectModel
 	{
 		public class Emitter_DefaultEmitter : EmitterModel
 		{
@@ -22,8 +22,7 @@ namespace Neutrino
 				public float size1_;
 				public override float size1() { return size1_; }
 				public override _math.vec2 size2() { return _math.vec2_(0, 0); }
-				public _math.vec3 color_;
-				public override _math.vec3 color() { return color_; }
+				public override _math.vec3 color() { return _math.vec3_(1F,1F,1F); }
 				public override float alpha() { return 1; }
 				public override float gridIndex() { return 0; }
 				public override AttachedEmitter[] attachedEmitters() { return null; }
@@ -33,7 +32,6 @@ namespace Neutrino
 
 			public class EmitterData
 			{
-				public _math.vec3 _Color = _math.vec3_(0F,0F,0F);
 			}
 
 			public class GeneratorImpl : GeneratorPeriodic.Impl
@@ -42,7 +40,7 @@ namespace Neutrino
 				public float? fixedTime() { return null; }
 				public float? fixedShots() { return null; }
 				public float startPhase() { return 1F; }
-				public float rate() { return 50F; }
+				public float rate() { return 100F; }
 			}
 
 			public class ConstructorImpl : ConstructorQuads.Impl
@@ -73,7 +71,7 @@ namespace Neutrino
 				particleImpl._lifetime = 0F;
 				_math.vec3 value_ = _math.vec3_(0F, 0F, 0F);
 				particleImpl._Position = _math.addv3_(value_, emitter.position());
-				_math.vec3 randvec_ = _math.randv3gen_(100F, emitter.random());
+				_math.vec3 randvec_ = _math.randv3gen_(0F, emitter.random());
 				particleImpl._Velocity = randvec_;
 				particleImpl._Angle = 0F;
 				particle.position_ = particleImpl._Position;
@@ -90,7 +88,7 @@ namespace Neutrino
 				particleImpl._lifetime = 0F;
 				_math.vec3 value_ = _math.vec3_(0F, 0F, 0F);
 				particleImpl._Position = _math.addv3_(value_, emitter.position());
-				_math.vec3 randvec_ = _math.randv3gen_(100F, emitter.random());
+				_math.vec3 randvec_ = _math.randv3gen_(0F, emitter.random());
 				particleImpl._Velocity = randvec_;
 				particleImpl._Angle = 0F;
 				particle.position_ = particleImpl._Position;
@@ -104,42 +102,50 @@ namespace Neutrino
 				GeneratorPeriodic generator = (GeneratorPeriodic)emitter.generator(); 
 				GeneratorImpl generatorImpl = (GeneratorImpl)generator.impl();
 				particleImpl._lifetime += dt;
-				_math.vec3 move_ = _math.addv3_(particleImpl._Position, _math.mulv3scalar_(particleImpl._Velocity, dt));
-				particleImpl._Position = move_;
+				_math.vec3 noise_a = _math.mulv3scalar_(_math.vec3_(100F,50F,30F), emitter.effect().time());
+				_math.addv3(out noise_a, noise_a, particleImpl._Position);
+				_math.vec3 noise_i = _math.mulv3scalar_(noise_a, 1.0F / 1000F); 
+				_math.vec3 noise = _math.noisePixelLinear3_(noise_i);
+				_math.mulv3(out noise, noise, _math.vec3_(0.0078125F,0.0078125F,0.0078125F));
+				_math.addv3(out noise, noise, _math.vec3_(-1F,-1F,-1F));
+				_math.mulv3scalar(out noise, noise, 200F);
+				_math.vec3 fmove_fs = noise;
+				_math.vec3 fmove_vs = _math.vec3_(0F,0F,0F);
+				_math.vec3 fmove_v = _math.addv3_(particleImpl._Velocity, _math.mulv3scalar_(fmove_fs, dt));
+				_math.vec3 fmove_p = _math.mulv3scalar_(fmove_v, dt);
+				_math.addv3(out fmove_p, fmove_p, particleImpl._Position);
+				particleImpl._Position = fmove_p;
+				particleImpl._Velocity = fmove_v;
 				particle.position_ = particleImpl._Position;
 				float value_ = 2F;
 				if (particleImpl._lifetime > value_) 
 				{
 					particle.dead_ = true;
 				}
-				float value_a = 30F;
+				float value_a = 10F;
 				particleImpl.size1_ = value_a;
-				particleImpl.color_ = emitterData._Color;
 			}
 			public Emitter_DefaultEmitter()
 			{
-				addProperty("Color", PropertyType.VEC3, 
-					(object emitterData) => { return ((EmitterData)emitterData)._Color; }, 
-					(object emitterData, object value) => { _math.copyv3(out ((EmitterData)emitterData)._Color, (_math.vec3)value); });
 				generatorCreator_ = (Emitter emitter) => { return new GeneratorPeriodic(emitter, new GeneratorImpl()); };
 				constructorCreator_ = (Emitter emitter) => { return new ConstructorQuads(emitter, new ConstructorImpl()); };
 				name_ = "DefaultEmitter";
-				maxNumParticles_ = 100;
+				maxNumParticles_ = 200;
 				sorting_ = Emitter.Sorting.OldToYoung;
 				particleCreator_ = (Effect effect) => { return new ParticleImpl(); };
 				emitterDataCreator_ = () => { return new EmitterData(); };
 			}
 		}
 
-		public Effect_params_test()
+		public Effect_noise_test()
 		{
 			textures_ = new string[] { "star_glow_white.png" };
 			materials_ = new RenderMaterial[] { RenderMaterial.Normal };
 			renderStyles_ = new RenderStyle[] { new RenderStyle(0,new uint[] {0}) };
 			frameTime_ = 0.0333333F;
 			presimulateTime_ = 0F;
-			maxNumRenderCalls_ = 100;
-			maxNumParticles_ = 100;
+			maxNumRenderCalls_ = 200;
+			maxNumParticles_ = 200;
 			emitterModels_ = new EmitterModel[]{ new Emitter_DefaultEmitter() };
 			activeEmitterModels_ = new uint[] { 0 };
 			randomGeneratorCreator_ = () => { return _math.rand_; };

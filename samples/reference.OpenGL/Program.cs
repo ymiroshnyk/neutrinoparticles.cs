@@ -28,6 +28,7 @@ namespace OpenGLTutorial6
 			Glut.glutIdleFunc(OnRenderFrame);
 			Glut.glutDisplayFunc(OnDisplay);
 			Glut.glutCloseFunc(OnClose);
+			Glut.glutKeyboardFunc(OnKeyboard);
 
 			time_ = 0;
 			Matrix4 modelMatrix = CreateModelMatrix(time_);
@@ -70,7 +71,7 @@ namespace OpenGLTutorial6
 			// set up the OpenGL viewport and clear both the color and depth bits
 			Gl.Viewport(0, 0, width, height);
 			//Gl.ClearColor(0.5F, 0.5F, 0.5F, 0.0F);
-			Gl.ClearColor(0.0F, 0.0F, 0.0F, 0.0F);
+			Gl.ClearColor(0.4F, 0.4F, 0.4F, 0.0F);
 			Gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
 			Matrix4 projMatrix = Matrix4.CreatePerspectiveFieldOfView(60F * (float)Math.PI / 180F, (float)width / height, 1F, 10000F); //.CreateOrthographic(width, height, 1F, 10000F);
@@ -79,6 +80,14 @@ namespace OpenGLTutorial6
 			effect_.render(ref projMatrix, ref viewMatrix, ref modelMatrix);
 			
 			Glut.glutSwapBuffers();
+		}
+
+		private static void OnKeyboard(byte key, int x, int y)
+		{
+			//if (key == 13)
+			{
+				effect_.neutrinoEffect().reset(null, null);
+			}
 		}
 
 		private static Matrix4 CreateModelMatrix(float time_)
