@@ -65,9 +65,9 @@ namespace Neutrino.Unity3D
 			renderBuffer_ = null;
 			neutrinoInited_ = false;
 
-#if UNITY_EDITOR
+			#if UNITY_EDITOR
 			EditorApplication.update -= Update;
-#endif
+			#endif
 		}
 
 		void Update()
@@ -78,18 +78,38 @@ namespace Neutrino.Unity3D
 			if (neutrinoEffect_ == null || neutrinoEffectModel_ == null )
 				return;
 
-#if UNITY_EDITOR
+			#if UNITY_EDITOR
 			float frameTime = Time.realtimeSinceStartup - lastFrameTime_;
 			lastFrameTime_ = Time.realtimeSinceStartup;
 
 			if (frameTime > 1)
 				frameTime = 1;
-#else
+			#else
 			float frameTime = Time.time - lastFrameTime_;
 			lastFrameTime_ = Time.time;
-#endif
+			#endif
+			Neutrino._math.quat rot = Neutrino._math.quat_(transform.rotation.w, transform.rotation.x, transform.rotation.y, transform.rotation.z);
 
-			Transform camTrans = Camera.main.transform;
+			if (simulateInWorldSpace)
+			{
+				Neutrino._math.vec3 pos = Neutrino._math.vec3_(transform.position.x / transform.localScale.x,
+					transform.position.y / transform.localScale.y, 
+					transform.position.z / transform.localScale.z);
+
+				neutrinoEffect_.update(frameTime, pos, rot);
+			}
+			else
+			{
+				neutrinoEffect_.update(frameTime, null, null);
+			}
+
+			#if UNITY_EDITOR
+			SceneView.RepaintAll();
+			#endif
+		}
+
+		void OnWillRenderObject() {
+			Transform camTrans = Camera.current.transform;
 
 			Neutrino._math.vec3 cameraRight =
 				Neutrino._math.vec3_(camTrans.right.x, camTrans.right.y, camTrans.right.z);
@@ -106,7 +126,6 @@ namespace Neutrino.Unity3D
 					transform.position.y / transform.localScale.y, 
 					transform.position.z / transform.localScale.z);
 
-				neutrinoEffect_.update(frameTime, pos, rot);
 				neutrinoEffect_.updateRenderBuffer(cameraRight, cameraUp, cameraDir, pos, rot);
 			}
 			else
@@ -116,7 +135,6 @@ namespace Neutrino.Unity3D
 				Neutrino._math.vec3 localCameraUp = Neutrino._math.applyv3quat_(cameraUp, invRot);
 				Neutrino._math.vec3 localCameraDir = Neutrino._math.applyv3quat_(cameraDir, invRot);
 
-				neutrinoEffect_.update(frameTime, null, null);
 				neutrinoEffect_.updateRenderBuffer(localCameraRight, localCameraUp, localCameraDir, null, null);
 			}
 
@@ -132,10 +150,9 @@ namespace Neutrino.Unity3D
 			MeshRenderer mr = gameObject.GetComponent<MeshRenderer>();
 			mr.sharedMaterials = subMeshMaterials;
 		}
+		#endregion
 
-#endregion
-
-#region DesignTime
+		#region DesignTime
 		public float gizmoSize = 10;
 		public void OnDrawGizmos()
 		{
@@ -148,7 +165,7 @@ namespace Neutrino.Unity3D
 			Gizmos.color = Color.green;
 			Gizmos.DrawWireSphere(transform.position, gizmoSize);
 		}
-#endregion
+		#endregion
 
 		private void initNeutrino()
 		{
@@ -162,13 +179,13 @@ namespace Neutrino.Unity3D
 
 			neutrinoEffect_ = new Neutrino.Effect(neutrinoEffectModel_, renderBuffer_,
 				simulateInWorldSpace ?
-					Neutrino._math.vec3_(gameObject.transform.position.x / gameObject.transform.localScale.x,
+				Neutrino._math.vec3_(gameObject.transform.position.x / gameObject.transform.localScale.x,
 					gameObject.transform.position.y / gameObject.transform.localScale.y,
 					gameObject.transform.position.z / gameObject.transform.localScale.z) :
-					Neutrino._math.vec3_(0, 0, 0),
+				Neutrino._math.vec3_(0, 0, 0),
 				simulateInWorldSpace ?
-					Neutrino._math.quat_(transform.rotation.w, transform.rotation.x, transform.rotation.y, transform.rotation.z) :
-					Neutrino._math.quat_(1, 0, 0, 0));
+				Neutrino._math.quat_(transform.rotation.w, transform.rotation.x, transform.rotation.y, transform.rotation.z) :
+				Neutrino._math.quat_(1, 0, 0, 0));
 
 			deserializeToEffect();
 
@@ -185,17 +202,17 @@ namespace Neutrino.Unity3D
 
 					switch (neutrinoEffectModel_.materials()[renderStyles[i].material_])
 					{
-						default:
-							material = new Material(NeutrinoContext.Instance.shaderNormal());
-							break;
+					default:
+						material = new Material(NeutrinoContext.Instance.shaderNormal());
+						break;
 
-						case Neutrino.RenderMaterial.Add:
-							material = new Material(NeutrinoContext.Instance.shaderAdd());
-							break;
+					case Neutrino.RenderMaterial.Add:
+						material = new Material(NeutrinoContext.Instance.shaderAdd());
+						break;
 
-						case Neutrino.RenderMaterial.Multiply:
-							material = new Material(NeutrinoContext.Instance.shaderMultiply());
-							break;
+					case Neutrino.RenderMaterial.Multiply:
+						material = new Material(NeutrinoContext.Instance.shaderMultiply());
+						break;
 					}
 
 					string filename = Path.GetFileNameWithoutExtension(
@@ -224,15 +241,15 @@ namespace Neutrino.Unity3D
 
 			neutrinoInited_ = true;
 
-#if UNITY_EDITOR
+			#if UNITY_EDITOR
 			lastFrameTime_ = Time.realtimeSinceStartup;
-#else
+			#else
 			lastFrameTime_ = Time.time;
-#endif
+			#endif
 
-#if UNITY_EDITOR
+			#if UNITY_EDITOR
 			EditorApplication.update += Update;
-#endif
+			#endif
 		}
 
 		[Serializable]
@@ -283,30 +300,30 @@ namespace Neutrino.Unity3D
 
 					switch (emitter.model().propertyType(propIndex))
 					{
-						case Neutrino.EmitterModel.PropertyType.FLOAT:
-							{
-								float value = (float)emitter.propertyValue(propIndex);
-								serialProp.value_.Add(value);
-							}
-							break;
-						case Neutrino.EmitterModel.PropertyType.VEC2:
-							{
-								_math.vec2 value = (_math.vec2)emitter.propertyValue(propIndex);
-								serialProp.value_.Add(value.x);
-								serialProp.value_.Add(value.y);
-							}
-							break;
-						case Neutrino.EmitterModel.PropertyType.VEC3:
-							{
-								_math.vec3 value = (_math.vec3)emitter.propertyValue(propIndex);
-								serialProp.value_.Add(value.x);
-								serialProp.value_.Add(value.y);
-								serialProp.value_.Add(value.z);
-							}
-							break;
-						case Neutrino.EmitterModel.PropertyType.QUAT:
-							// none until inspector is ready for quaternions
-							break;
+					case Neutrino.EmitterModel.PropertyType.FLOAT:
+						{
+							float value = (float)emitter.propertyValue(propIndex);
+							serialProp.value_.Add(value);
+						}
+						break;
+					case Neutrino.EmitterModel.PropertyType.VEC2:
+						{
+							_math.vec2 value = (_math.vec2)emitter.propertyValue(propIndex);
+							serialProp.value_.Add(value.x);
+							serialProp.value_.Add(value.y);
+						}
+						break;
+					case Neutrino.EmitterModel.PropertyType.VEC3:
+						{
+							_math.vec3 value = (_math.vec3)emitter.propertyValue(propIndex);
+							serialProp.value_.Add(value.x);
+							serialProp.value_.Add(value.y);
+							serialProp.value_.Add(value.z);
+						}
+						break;
+					case Neutrino.EmitterModel.PropertyType.QUAT:
+						// none until inspector is ready for quaternions
+						break;
 					}
 				}
 			}
@@ -343,29 +360,29 @@ namespace Neutrino.Unity3D
 
 					switch (propType.Value)
 					{
-						case Neutrino.EmitterModel.PropertyType.FLOAT:
-							{
-								if (serialProp.value_.Count == 1)
-									emitter.setPropertyValue(serialProp.name_, serialProp.value_[0]);
-							}
-							break;
-						case Neutrino.EmitterModel.PropertyType.VEC2:
-							{
-								if (serialProp.value_.Count == 2)
-									emitter.setPropertyValue(serialProp.name_, 
-										_math.vec2_(serialProp.value_[0], serialProp.value_[1]));
-							}
-							break;
-						case Neutrino.EmitterModel.PropertyType.VEC3:
-							{
-								if (serialProp.value_.Count == 3)
-									emitter.setPropertyValue(serialProp.name_,
-										_math.vec3_(serialProp.value_[0], serialProp.value_[1], serialProp.value_[2]));
-							}
-							break;
-						case Neutrino.EmitterModel.PropertyType.QUAT:
-							// none until inspector is ready for quaternions
-							break;
+					case Neutrino.EmitterModel.PropertyType.FLOAT:
+						{
+							if (serialProp.value_.Count == 1)
+								emitter.setPropertyValue(serialProp.name_, serialProp.value_[0]);
+						}
+						break;
+					case Neutrino.EmitterModel.PropertyType.VEC2:
+						{
+							if (serialProp.value_.Count == 2)
+								emitter.setPropertyValue(serialProp.name_, 
+									_math.vec2_(serialProp.value_[0], serialProp.value_[1]));
+						}
+						break;
+					case Neutrino.EmitterModel.PropertyType.VEC3:
+						{
+							if (serialProp.value_.Count == 3)
+								emitter.setPropertyValue(serialProp.name_,
+									_math.vec3_(serialProp.value_[0], serialProp.value_[1], serialProp.value_[2]));
+						}
+						break;
+					case Neutrino.EmitterModel.PropertyType.QUAT:
+						// none until inspector is ready for quaternions
+						break;
 					}
 				}
 			}
