@@ -15,6 +15,9 @@ namespace Neutrino.Unity3D
 			NeutrinoRenderer renderer = (NeutrinoRenderer)target;
 			Neutrino.Effect effect = renderer.neutrinoEffect();
 
+			if (effect == null)
+				return;
+
 			GUILayout.BeginHorizontal ();
 
 			if (GUILayout.Button("Restart")) 
