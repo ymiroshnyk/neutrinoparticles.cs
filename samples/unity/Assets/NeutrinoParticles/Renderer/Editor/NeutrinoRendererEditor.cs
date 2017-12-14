@@ -29,6 +29,8 @@ namespace Neutrino.Unity3D
 					renderer.unpause ();
 				else
 					renderer.pause ();
+
+				EditorApplication.MarkSceneDirty();
 			}
 
 			bool generatorsPaused = renderer.generatorsPaused ();
@@ -38,9 +40,11 @@ namespace Neutrino.Unity3D
 					renderer.unpauseGenerators();
 				else
 					renderer.pauseGenerators();
+
+				EditorApplication.MarkSceneDirty();
 			}
 
-			GUILayout.EndHorizontal ();
+			GUILayout.EndHorizontal();
 
 			for (int emitterIndex = 0; emitterIndex < effect.numEmitters(); ++emitterIndex)
 			{
