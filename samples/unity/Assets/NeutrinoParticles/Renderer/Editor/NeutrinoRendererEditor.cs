@@ -25,23 +25,23 @@ namespace Neutrino.Unity3D
 			bool paused = renderer.paused();
 			if (GUILayout.Button(paused ? "Unpause" : "Pause")) 
 			{
+				Undo.RecordObject (renderer, paused ? "Unpause particle effect" : "Pause particles effect");
+
 				if (paused)
 					renderer.unpause ();
 				else
 					renderer.pause ();
-
-				EditorApplication.MarkSceneDirty();
 			}
 
 			bool generatorsPaused = renderer.generatorsPaused ();
 			if (GUILayout.Button(generatorsPaused ? "Unpause generation" : "Pause generation")) 
 			{
+				Undo.RecordObject (renderer, generatorsPaused ? "Unpause generation in particle effect" : "Pause generation in particles effect");
+
 				if (generatorsPaused)
 					renderer.unpauseGenerators();
 				else
 					renderer.pauseGenerators();
-
-				EditorApplication.MarkSceneDirty();
 			}
 
 			GUILayout.EndHorizontal();
