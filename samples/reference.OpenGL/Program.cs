@@ -34,7 +34,7 @@ namespace OpenGLTutorial6
 			Matrix4 modelMatrix = CreateModelMatrix(time_);
 
 			context_ = new NeutrinoGl.Context("..\\..\\effects\\textures\\");
-			effectModel_ = new NeutrinoGl.EffectModel(context_, new Neutrino.Effect_params_test());
+			effectModel_ = new NeutrinoGl.EffectModel(context_, new Neutrino.Effect_TermPath());
 			effect_ = new NeutrinoGl.Effect(effectModel_, Neutrino._math.vec3_(modelMatrix[3].x, modelMatrix[3].y, modelMatrix[3].z), null);
 			effect_.neutrinoEffect().setEmitterPropertyValue(null, "Color", Neutrino._math.vec3_(1, 1, 0));
 
@@ -74,8 +74,8 @@ namespace OpenGLTutorial6
 			Gl.ClearColor(0.4F, 0.4F, 0.4F, 0.0F);
 			Gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-			Matrix4 projMatrix = Matrix4.CreatePerspectiveFieldOfView(60F * (float)Math.PI / 180F, (float)width / height, 1F, 10000F); //.CreateOrthographic(width, height, 1F, 10000F);
-			Matrix4 viewMatrix = Matrix4.LookAt(new Vector3(0, 0, 1000), Vector3.Zero, Vector3.Up);
+			Matrix4 projMatrix = Matrix4.CreateOrthographic(width, height, 1F, 10000F); //.CreatePerspectiveFieldOfView(60F * (float)Math.PI / 180F, (float)width / height, 1F, 10000F);
+            Matrix4 viewMatrix = Matrix4.LookAt(new Vector3(0, 0, 1000), Vector3.Zero, Vector3.Up);
 			
 			effect_.render(ref projMatrix, ref viewMatrix, ref modelMatrix);
 			
@@ -117,9 +117,10 @@ namespace OpenGLTutorial6
 
 		private static Matrix4 CreateModelMatrix(float time_)
 		{
-			Matrix4 modelTranslationMatrix = Matrix4.CreateTranslation(new Vector3(displace, 0, 0));
-			Matrix4 modelRotationMatrix = Matrix4.CreateRotationZ(time_);
-			return modelTranslationMatrix * modelRotationMatrix;
+            //Matrix4 modelTranslationMatrix = Matrix4.CreateTranslation(new Vector3(displace, 0, 0));
+            //Matrix4 modelRotationMatrix = Matrix4.CreateRotationZ(time_);
+            //return modelTranslationMatrix * modelRotationMatrix;
+            return Matrix4.Identity;
 		}
 	}
 }

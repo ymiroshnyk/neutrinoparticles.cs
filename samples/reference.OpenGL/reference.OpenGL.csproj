@@ -47,7 +47,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="effects\export\params_test.cs" />
+    <Compile Include="effects\export\term_path.cs" />
     <Compile Include="neutrinogl\neutrinogl_context.cs" />
     <Compile Include="neutrinogl\neutrinogl_effect.cs" />
     <Compile Include="neutrinogl\neutrinogl_effect_model.cs" />
